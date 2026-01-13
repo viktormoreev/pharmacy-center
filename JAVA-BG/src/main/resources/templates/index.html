@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head">
+</head>
+<body>
+<h1>Digital Pharmacy</h1>
+<nav th:replace="fragments :: navigation"></nav>
+<h1 th:text="'Hello and  ' + ${welcome}"></h1>
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>

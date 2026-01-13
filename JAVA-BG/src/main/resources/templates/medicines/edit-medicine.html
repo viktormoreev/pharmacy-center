@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head"></head>
+<body>
+<h1>Digital Pharmacy</h1>
+<nav th:replace="fragments :: navigation"></nav>
+<h4>Edit Medicine</h4>
+<div class="col-6">
+    <form action="#" th:action="@{/medicines/update/{id}(id=${medicine.id})}" th:object="${medicine}" method="post">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input class="form-control" type="text" th:field="*{name}" placeholder="Name" id="name">
+            <input class="form-control" type="text" th:field="*{ageAppropriateness}" placeholder="Age Appropriateness" id="ageAppropriateness">
+            <input class="form-control" type="text" th:field="*{needsRecipe}" placeholder="Needs Recipe" id="needsRecipe">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Medicine</button>
+    </form>
+</div>
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>
