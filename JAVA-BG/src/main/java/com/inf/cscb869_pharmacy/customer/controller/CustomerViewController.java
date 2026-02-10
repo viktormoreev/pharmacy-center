@@ -5,6 +5,7 @@ import com.inf.cscb869_pharmacy.customer.entity.Customer;
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,6 +40,7 @@ public class CustomerViewController {
      * Show create customer form
      */
     @GetMapping("/create")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("customerDTO", new CustomerDTO());
         return "customers/create-customer";
@@ -48,6 +50,7 @@ public class CustomerViewController {
      * Handle create customer form submission
      */
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String createCustomer(@Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
                                   BindingResult result,
                                   RedirectAttributes redirectAttributes) {
@@ -85,6 +88,7 @@ public class CustomerViewController {
      * Show edit customer form
      */
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             Customer customer = customerService.getCustomerById(id);
@@ -102,6 +106,7 @@ public class CustomerViewController {
      * Handle edit customer form submission
      */
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String updateCustomer(@PathVariable Long id,
                                   @Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
                                   BindingResult result,
@@ -125,6 +130,7 @@ public class CustomerViewController {
      * Soft delete customer
      */
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String deleteCustomer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             customerService.deleteCustomer(id);

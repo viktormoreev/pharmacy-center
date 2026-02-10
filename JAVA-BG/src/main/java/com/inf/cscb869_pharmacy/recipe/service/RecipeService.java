@@ -22,5 +22,6 @@ public interface RecipeService {
     List<Recipe> getAllRecipesByCreationDateAndDoctorNameContains(LocalDate creationDate, String doctorName);
     
     long countRecipes();
+    long countRecipesWithDiagnosis();
     long countRecipesByStatus(String status);
 }

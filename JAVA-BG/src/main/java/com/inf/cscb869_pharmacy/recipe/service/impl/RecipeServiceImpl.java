@@ -77,6 +77,11 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public long countRecipesWithDiagnosis() {
+        return this.recipeRepository.countWithDiagnosis();
+    }
+
+    @Override
     public long countRecipesByStatus(String status) {
         return this.recipeRepository.findAll().stream()
                 .filter(recipe -> recipe.getStatus() != null && recipe.getStatus().name().equalsIgnoreCase(status))

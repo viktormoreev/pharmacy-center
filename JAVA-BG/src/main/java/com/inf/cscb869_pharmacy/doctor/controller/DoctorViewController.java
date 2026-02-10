@@ -4,6 +4,7 @@ import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
 import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +34,7 @@ public class DoctorViewController {
      * Show create doctor form
      */
     @GetMapping("/create")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("doctor", new Doctor());
         return "doctors/create-doctor";
@@ -42,6 +44,7 @@ public class DoctorViewController {
      * Handle create doctor form submission
      */
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String createDoctor(@Valid @ModelAttribute("doctor") Doctor doctor,
                                BindingResult result,
                                RedirectAttributes redirectAttributes) {
@@ -55,9 +58,25 @@ public class DoctorViewController {
     }
 
     /**
+     * Show doctor details (read-only)
+     */
+    @GetMapping("/{id}")
+    public String viewDoctor(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Doctor doctor = doctorService.getDoctor(id);
+            model.addAttribute("doctor", doctor);
+            return "doctors/view-doctor";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Doctor not found!");
+            return "redirect:/doctors";
+        }
+    }
+
+    /**
      * Show edit doctor form
      */
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             Doctor doctor = doctorService.getDoctor(id);
@@ -73,6 +92,7 @@ public class DoctorViewController {
      * Handle edit doctor form submission
      */
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String updateDoctor(@PathVariable Long id,
                                @Valid @ModelAttribute("doctor") Doctor doctor,
                                BindingResult result,
@@ -90,6 +110,7 @@ public class DoctorViewController {
      * Delete doctor
      */
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String deleteDoctor(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             doctorService.deleteDoctor(id);

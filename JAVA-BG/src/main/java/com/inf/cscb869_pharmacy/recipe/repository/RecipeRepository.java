@@ -29,6 +29,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     long countDistinctPatientsByDiagnosis(@Param("diagnosis") String diagnosis);
 
     /**
+     * Count recipes/examinations that have non-empty diagnosis text
+     */
+    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.diagnosis IS NOT NULL AND TRIM(r.diagnosis) <> ''")
+    long countWithDiagnosis();
+
+    /**
      * Find all recipes by doctor ID
      */
     List<Recipe> findByDoctorId(Long doctorId);
@@ -78,9 +84,13 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     /**
      * Count sick leaves by month
      */
-    @Query("SELECT FUNCTION('YEAR', r.creationDate), FUNCTION('MONTH', r.creationDate), COUNT(r) " +
-           "FROM Recipe r WHERE r.sickLeave = TRUE " +
-           "GROUP BY FUNCTION('YEAR', r.creationDate), FUNCTION('MONTH', r.creationDate) " +
-           "ORDER BY FUNCTION('YEAR', r.creationDate) DESC, FUNCTION('MONTH', r.creationDate) DESC")
+    @Query(value = "SELECT EXTRACT(YEAR FROM r.creation_date) AS year, " +
+            "EXTRACT(MONTH FROM r.creation_date) AS month, " +
+            "COUNT(*) AS cnt " +
+            "FROM recipe r " +
+            "WHERE r.sick_leave = TRUE " +
+            "GROUP BY EXTRACT(YEAR FROM r.creation_date), EXTRACT(MONTH FROM r.creation_date) " +
+            "ORDER BY EXTRACT(YEAR FROM r.creation_date) DESC, EXTRACT(MONTH FROM r.creation_date) DESC",
+            nativeQuery = true)
     List<Object[]> countSickLeavesByMonth();
 }

@@ -3,6 +3,7 @@ package com.inf.cscb869_pharmacy.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,21 +38,42 @@ public class SecurityConfig {
                 .requestMatchers("/", "/index", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/login/**", "/oauth2/**").permitAll()
                 
-                // Medicine endpoints - Anyone authenticated can view
-                .requestMatchers("/api/medicines/**").authenticated()
-                .requestMatchers("/medicines/**").authenticated()
+                // Medicine endpoints - only medical staff can view/modify
+                .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/api/medicines/**").hasAnyRole("PHARMACIST", "ADMIN")
+                .requestMatchers("/medicines").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/medicines/create-medicine", "/medicines/create",
+                        "/medicines/edit-medicine/**", "/medicines/update/**", "/medicines/delete/**")
+                .hasAnyRole("PHARMACIST", "ADMIN")
+                .requestMatchers("/medicines/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 
                 // Recipe endpoints - Doctors and Pharmacists
                 .requestMatchers("/api/recipes/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 .requestMatchers("/recipes/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+
+                // Diagnosis and sick leave modules - medical staff only
+                .requestMatchers("/diagnoses/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/api/diagnoses/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/sick-leaves/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/api/sick-leaves/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 
-                // Doctor management - Admin and Pharmacists only
+                // Doctor management - doctor/pharmacist/admin can view, only pharmacist/admin can modify
+                .requestMatchers(HttpMethod.GET, "/doctors", "/doctors/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 .requestMatchers("/api/doctors/**").hasAnyRole("PHARMACIST", "ADMIN")
                 .requestMatchers("/doctors/**").hasAnyRole("PHARMACIST", "ADMIN")
                 
-                // Customer management - Pharmacists and Admin
+                // Customer management - doctor/pharmacist/admin can view, only pharmacist/admin can modify
+                .requestMatchers(HttpMethod.GET, "/customers", "/customers/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 .requestMatchers("/api/customers/**").hasAnyRole("PHARMACIST", "ADMIN")
                 .requestMatchers("/customers/**").hasAnyRole("PHARMACIST", "ADMIN")
+
+                // Customer self portal
+                .requestMatchers("/my/**").hasRole("CUSTOMER")
+
+                // Dashboard and reports - medical staff roles only
+                .requestMatchers("/dashboard/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/reports/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
+                .requestMatchers("/api/reports/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
                 
                 // All other requests require authentication
                 .anyRequest().authenticated()

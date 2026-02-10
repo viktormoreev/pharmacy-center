@@ -55,6 +55,11 @@ UPDATE doctor
 SET email = 'doctor@pharmacy.com'
 WHERE license_number = 'UIN-12345';
 
+-- Align displayed doctor name with Keycloak demo account
+UPDATE doctor
+SET name = 'Dr. John Smith'
+WHERE license_number = 'UIN-12345';
+
 -- ========================================
 -- CUSTOMERS/PATIENTS (with new fields: EGN, primary_doctor_id, insurance_paid_until)
 -- ========================================
@@ -247,6 +252,44 @@ WHERE NOT EXISTS (
     AND r.creation_date = '2026-01-20'
 );
 
+-- Recipe 6: John Smith - Follow-up examination (No sick leave)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-02-05',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1),
+    'ACTIVE',
+    'Hypertension follow-up',
+    'Blood pressure improved. Continue treatment and low-salt diet.',
+    '2026-08-05',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1)
+    AND r.creation_date = '2026-02-05'
+);
+
+-- Recipe 7: Mary Johnson - Follow-up examination (No sick leave)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-02-10',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
+    'ACTIVE',
+    'Post-viral check-up',
+    'Symptoms resolved. Return if fever or cough persists.',
+    '2026-08-10',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1)
+    AND r.creation_date = '2026-02-10'
+);
+
 -- ========================================
 -- RECIPE MEDICINES (Prescription line items)
 -- ========================================
@@ -324,3 +367,370 @@ WHERE NOT EXISTS (
     WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1) AND creation_date = '2026-01-20' LIMIT 1)
     AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Amoxicillin' LIMIT 1)
 );
+
+-- ========================================
+-- ADDITIONAL MVP DEMO DATA (for full feature showcase)
+-- ========================================
+
+-- Additional medicines
+INSERT INTO medicine (name, age_appropriateness, needs_recipe)
+SELECT 'Ventolin', 6, true
+WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Ventolin');
+
+INSERT INTO medicine (name, age_appropriateness, needs_recipe)
+SELECT 'Cetirizine', 6, false
+WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Cetirizine');
+
+INSERT INTO medicine (name, age_appropriateness, needs_recipe)
+SELECT 'Metformin', 18, true
+WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Metformin');
+
+INSERT INTO medicine (name, age_appropriateness, needs_recipe)
+SELECT 'Bisoprolol', 18, true
+WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Bisoprolol');
+
+INSERT INTO medicine (name, age_appropriateness, needs_recipe)
+SELECT 'Omeprazole', 16, false
+WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Omeprazole');
+
+-- Additional customers
+INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+SELECT
+    'Nikolai Petrov',
+    '8802145678',
+    37,
+    'n.petrov@email.com',
+    '+359888666777',
+    '12 Vitosha Blvd, Sofia',
+    '1988-02-14',
+    'Sulfonamides',
+    'Type 2 Diabetes',
+    'INS-001239',
+    true,
+    '2026-12-01',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1)
+WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '8802145678');
+
+INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+SELECT
+    'Silvia Todorova',
+    '9409073456',
+    31,
+    'silvia.todorova@email.com',
+    '+359888777888',
+    '27 Rakovski St, Plovdiv',
+    '1994-09-07',
+    NULL,
+    'Seasonal allergy',
+    'INS-001240',
+    true,
+    '2026-11-15',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1)
+WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '9409073456');
+
+INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+SELECT
+    'Georgi Ivanov',
+    '7601011122',
+    50,
+    'georgi.ivanov@email.com',
+    '+359888999000',
+    '8 Tsar Simeon, Varna',
+    '1976-01-01',
+    'Aspirin',
+    'Hypertension',
+    'INS-001241',
+    true,
+    '2025-09-01',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1)
+WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '7601011122');
+
+-- Additional recipes across months and statuses
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-02-14',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1),
+    'FULFILLED',
+    'Type 2 diabetes follow-up',
+    'Glycemic control improved, continue treatment.',
+    '2026-08-14',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1)
+      AND r.creation_date = '2026-02-14'
+);
+
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-03-03',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1),
+    'ACTIVE',
+    'Seasonal allergic rhinitis',
+    'Start antihistamine for 14 days.',
+    '2026-05-03',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1)
+      AND r.creation_date = '2026-03-03'
+);
+
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-03-10',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-33333' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1),
+    'EXPIRED',
+    'Migraine episode',
+    'Symptomatic treatment, neurology follow-up if persistent.',
+    '2026-04-10',
+    true,
+    3,
+    '2026-03-10'
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1)
+      AND r.creation_date = '2026-03-10'
+);
+
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-04-12',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-22222' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1),
+    'CANCELLED',
+    'Atopic dermatitis flare',
+    'Patient did not start treatment, prescription cancelled.',
+    '2026-06-12',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1)
+      AND r.creation_date = '2026-04-12'
+);
+
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-05-05',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1),
+    'FULFILLED',
+    'Hypertension control visit',
+    'Medication adjusted. Return after 2 months.',
+    '2026-11-05',
+    false,
+    NULL,
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1)
+      AND r.creation_date = '2026-05-05'
+);
+
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+SELECT
+    '2026-06-01',
+    (SELECT id FROM doctor WHERE license_number = 'UIN-11111' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
+    'ACTIVE',
+    'Acute bronchitis',
+    'Antibiotic course and home rest.',
+    '2026-07-01',
+    true,
+    6,
+    '2026-06-01'
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe r
+    WHERE r.customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1)
+      AND r.creation_date = '2026-06-01'
+);
+
+-- Additional recipe medicines
+INSERT INTO recipe_medicines (recipe_id, medicine_id, dosage, duration_days, instructions, quantity)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1) AND creation_date = '2026-02-14' LIMIT 1),
+    (SELECT id FROM medicine WHERE name = 'Metformin' LIMIT 1),
+    '500mg twice daily',
+    60,
+    'Take after meals.',
+    120
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe_medicines rm
+    WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1) AND creation_date = '2026-02-14' LIMIT 1)
+      AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Metformin' LIMIT 1)
+);
+
+INSERT INTO recipe_medicines (recipe_id, medicine_id, dosage, duration_days, instructions, quantity)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1) AND creation_date = '2026-03-03' LIMIT 1),
+    (SELECT id FROM medicine WHERE name = 'Cetirizine' LIMIT 1),
+    '10mg once daily',
+    14,
+    'Take in the evening.',
+    14
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe_medicines rm
+    WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1) AND creation_date = '2026-03-03' LIMIT 1)
+      AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Cetirizine' LIMIT 1)
+);
+
+INSERT INTO recipe_medicines (recipe_id, medicine_id, dosage, duration_days, instructions, quantity)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1),
+    (SELECT id FROM medicine WHERE name = 'Analgin' LIMIT 1),
+    '1 tablet when needed',
+    7,
+    'Max 3 tablets/day.',
+    20
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe_medicines rm
+    WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1)
+      AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Analgin' LIMIT 1)
+);
+
+INSERT INTO recipe_medicines (recipe_id, medicine_id, dosage, duration_days, instructions, quantity)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-05-05' LIMIT 1),
+    (SELECT id FROM medicine WHERE name = 'Bisoprolol' LIMIT 1),
+    '5mg once daily',
+    60,
+    'Measure blood pressure every morning.',
+    60
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe_medicines rm
+    WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-05-05' LIMIT 1)
+      AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Bisoprolol' LIMIT 1)
+);
+
+INSERT INTO recipe_medicines (recipe_id, medicine_id, dosage, duration_days, instructions, quantity)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1),
+    (SELECT id FROM medicine WHERE name = 'Amoxicillin' LIMIT 1),
+    '500mg three times daily',
+    6,
+    'Finish full antibiotic course.',
+    18
+WHERE NOT EXISTS (
+    SELECT 1 FROM recipe_medicines rm
+    WHERE rm.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1)
+      AND rm.medicine_id = (SELECT id FROM medicine WHERE name = 'Amoxicillin' LIMIT 1)
+);
+
+-- Diagnoses table data (for diagnosis module demo)
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-01-10' LIMIT 1),
+    'I10',
+    'Essential (primary) hypertension',
+    'Stable blood pressure values',
+    '2026-01-10',
+    true,
+    'MODERATE',
+    'Continue antihypertensive therapy'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-01-10' LIMIT 1)
+      AND d.icd10_code = 'I10'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1),
+    'J20',
+    'Acute bronchitis',
+    'Cough, fever, chest discomfort',
+    '2026-06-01',
+    true,
+    'MODERATE',
+    'Home rest and antibiotics'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1)
+      AND d.icd10_code = 'J20'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1) AND creation_date = '2026-03-03' LIMIT 1),
+    'J30',
+    'Allergic rhinitis',
+    'Seasonal allergy symptoms',
+    '2026-03-03',
+    true,
+    'MILD',
+    'Monitor during pollen season'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1) AND creation_date = '2026-03-03' LIMIT 1)
+      AND d.icd10_code = 'J30'
+);
+
+-- Sick leaves table data (for sick leave module demo)
+INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+SELECT
+    'SL-20260112-A1B2',
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-01-12' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    '2026-01-12',
+    5,
+    '2026-01-16',
+    'Acute viral infection recovery',
+    'COMPLETED',
+    '2026-01-12',
+    'Recovered without complications'
+WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260112-A1B2');
+
+INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+SELECT
+    'SL-20260120-C3D4',
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1) AND creation_date = '2026-01-20' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1),
+    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
+    '2026-01-20',
+    7,
+    '2026-01-26',
+    'Asthma exacerbation',
+    'COMPLETED',
+    '2026-01-20',
+    'Follow-up after completion'
+WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260120-C3D4');
+
+INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+SELECT
+    'SL-20260310-E5F6',
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1),
+    (SELECT id FROM doctor WHERE license_number = 'UIN-33333' LIMIT 1),
+    '2026-03-10',
+    3,
+    '2026-03-12',
+    'Severe migraine episode',
+    'CANCELLED',
+    '2026-03-10',
+    'Cancelled due to early symptom resolution'
+WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260310-E5F6');
+
+INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+SELECT
+    'SL-20260601-G7H8',
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1),
+    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
+    (SELECT id FROM doctor WHERE license_number = 'UIN-11111' LIMIT 1),
+    '2026-06-01',
+    6,
+    '2026-06-06',
+    'Acute bronchitis recovery',
+    'ACTIVE',
+    '2026-06-01',
+    'Avoid physical exertion'
+WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260601-G7H8');

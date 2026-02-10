@@ -21,7 +21,6 @@
         
         <form th:action="@{/sick-leaves/create}" th:object="${sickLeave}" method="post">
             <input type="hidden" name="recipeId" th:if="${recipe != null}" th:value="${recipe.id}">
-            <input type="hidden" name="customerId" th:if="${selectedCustomer != null}" th:value="${selectedCustomer.id}">
             <input type="hidden" name="doctorId" th:if="${!isDoctorUser and selectedDoctor != null}" th:value="${selectedDoctor.id}">
             
             <div class="card">
@@ -38,31 +37,9 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-12 mb-3" th:if="${recipe == null}">
-                            <label for="recipeId" class="form-label">Recipe / Examination *</label>
-                            <select name="recipeId" id="recipeId" class="form-select" required>
-                                <option value="">-- Select Recipe --</option>
-                                <option th:each="r : ${recipes}"
-                                        th:value="${r.id}"
-                                        th:text="'#' + ${r.id} + ' | ' + ${r.customer.name} + ' | ' + ${#temporals.format(r.creationDate, 'dd-MM-yyyy')}">
-                                    Recipe
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 mb-3" th:if="${recipe != null}">
-                            <label class="form-label">Recipe / Examination</label>
-                            <div class="form-control-plaintext"
-                                 th:text="'#' + ${recipe.id} + ' | ' + ${recipe.customer.name} + ' | ' + ${#temporals.format(recipe.creationDate, 'dd-MM-yyyy')}">
-                                Recipe
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="customerId" class="form-label">Patient *</label>
-                            <select name="customerId" id="customerId" class="form-select" required 
-                                    th:disabled="${selectedCustomer != null}">
+                            <select name="customerId" id="customerId" class="form-select" required>
                                 <option value="">-- Select Patient --</option>
                                 <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"
                                         th:selected="${selectedCustomer != null and c.id == selectedCustomer.id}">Patient</option>
@@ -81,6 +58,30 @@
                             <label class="form-label">Doctor</label>
                             <div class="form-control-plaintext">
                                 Assigned automatically from your account.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3" th:if="${recipe == null}">
+                            <label for="recipeId" class="form-label">Recipe / Examination *</label>
+                            <select name="recipeId" id="recipeId" class="form-select" required
+                                    th:disabled="${selectedCustomer == null}">
+                                <option value="">-- Select Recipe --</option>
+                                <option th:each="r : ${recipes}"
+                                        th:value="${r.id}"
+                                        th:attr="data-customer-id=${r.customer.id}"
+                                        th:text="'#' + ${r.id} + ' | ' + ${r.customer.name} + ' | ' + ${#temporals.format(r.creationDate, 'dd-MM-yyyy')}">
+                                    Recipe
+                                </option>
+                            </select>
+                            <div class="form-text">First select a patient, then choose one of that patient's recipes.</div>
+                        </div>
+                        <div class="col-md-12 mb-3" th:if="${recipe != null}">
+                            <label class="form-label">Recipe / Examination</label>
+                            <div class="form-control-plaintext"
+                                 th:text="'#' + ${recipe.id} + ' | ' + ${recipe.customer.name} + ' | ' + ${#temporals.format(recipe.creationDate, 'dd-MM-yyyy')}">
+                                Recipe
                             </div>
                         </div>
                     </div>
@@ -121,5 +122,56 @@
         </form>
     </div>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        (function () {
+            const patientSelect = document.getElementById('customerId');
+            const recipeSelect = document.getElementById('recipeId');
+            if (!patientSelect || !recipeSelect) {
+                return;
+            }
+
+            const placeholder = recipeSelect.options[0];
+            const allRecipes = Array.from(recipeSelect.options)
+                .slice(1)
+                .map((option) => ({
+                    value: option.value,
+                    label: option.textContent,
+                    customerId: option.getAttribute('data-customer-id')
+                }));
+
+            const applyRecipeFilter = () => {
+                const selectedPatientId = patientSelect.value;
+                const selectedRecipeId = recipeSelect.value;
+
+                recipeSelect.innerHTML = '';
+                recipeSelect.appendChild(placeholder.cloneNode(true));
+
+                if (!selectedPatientId) {
+                    recipeSelect.value = '';
+                    recipeSelect.disabled = true;
+                    return;
+                }
+
+                allRecipes
+                    .filter((recipe) => recipe.customerId === selectedPatientId)
+                    .forEach((recipe) => {
+                        const option = document.createElement('option');
+                        option.value = recipe.value;
+                        option.textContent = recipe.label;
+                        option.setAttribute('data-customer-id', recipe.customerId);
+                        recipeSelect.appendChild(option);
+                    });
+
+                recipeSelect.disabled = false;
+
+                if (selectedRecipeId) {
+                    recipeSelect.value = selectedRecipeId;
+                }
+            };
+
+            patientSelect.addEventListener('change', applyRecipeFilter);
+            applyRecipeFilter();
+        })();
+    </script>
 </body>
 </html>

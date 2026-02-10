@@ -81,12 +81,25 @@ public class SickLeaveViewController {
         model.addAttribute("customers", customerService.getAllCustomers());
 
         if (recipeId != null) {
-            model.addAttribute("recipe", recipeService.getRecipe(recipeId));
+            var recipe = recipeService.getRecipe(recipeId);
+            model.addAttribute("recipe", recipe);
+            if (customerId == null && recipe.getCustomer() != null) {
+                model.addAttribute("selectedCustomer", recipe.getCustomer());
+            }
         }
         
         if (customerId != null) {
             model.addAttribute("selectedCustomer", customerService.getCustomerById(customerId));
         }
+
+        Long selectedCustomerId = null;
+        if (model.containsAttribute("selectedCustomer")) {
+            var selectedCustomer = (com.inf.cscb869_pharmacy.customer.entity.Customer) model.asMap().get("selectedCustomer");
+            if (selectedCustomer != null) {
+                selectedCustomerId = selectedCustomer.getId();
+            }
+        }
+        final Long selectedCustomerIdFinal = selectedCustomerId;
         
         if (isDoctorUser(authentication)) {
             var currentDoctor = findDoctorByEmail(getUserEmail(authentication));
@@ -98,16 +111,23 @@ public class SickLeaveViewController {
             model.addAttribute("selectedDoctor", currentDoctor);
             model.addAttribute("doctors", List.of(currentDoctor));
             model.addAttribute("isDoctorUser", true);
-            model.addAttribute("recipes", recipeService.getRecipes().stream()
-                    .filter(r -> r.getDoctor() != null && r.getDoctor().getId().equals(currentDoctor.getId()))
-                    .collect(Collectors.toList()));
+            var recipes = recipeService.getRecipes().stream()
+                    .filter(r -> r.getDoctor() != null && r.getDoctor().getId().equals(currentDoctor.getId()));
+            if (selectedCustomerIdFinal != null) {
+                recipes = recipes.filter(r -> r.getCustomer() != null && r.getCustomer().getId().equals(selectedCustomerIdFinal));
+            }
+            model.addAttribute("recipes", recipes.collect(Collectors.toList()));
         } else {
             if (doctorId != null) {
                 model.addAttribute("selectedDoctor", doctorService.getDoctor(doctorId));
             }
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("isDoctorUser", false);
-            model.addAttribute("recipes", recipeService.getRecipes());
+            var recipes = recipeService.getRecipes().stream();
+            if (selectedCustomerIdFinal != null) {
+                recipes = recipes.filter(r -> r.getCustomer() != null && r.getCustomer().getId().equals(selectedCustomerIdFinal));
+            }
+            model.addAttribute("recipes", recipes.collect(Collectors.toList()));
         }
         
         return "sickleaves/create-sick-leave";

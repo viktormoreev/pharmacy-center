@@ -116,7 +116,7 @@
                             <h2 class="mb-0 fw-bold" th:text="${totalDiagnoses != null ? totalDiagnoses : 0}">0</h2>
                             <small class="text-danger">
                                 <i class="bi bi-clipboard2-pulse"></i>
-                                <span th:text="${primaryDiagnoses != null ? primaryDiagnoses : 0}">0</span> primary
+                                From prescription records
                             </small>
                         </div>
                         <div class="stats-icon bg-danger-subtle">
@@ -173,47 +173,13 @@
     <!-- Charts Row -->
     <div class="row g-4 mb-5">
         <!-- Prescription Status Chart -->
-        <div class="col-md-6">
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title mb-4">
                         <i class="bi bi-pie-chart"></i> Prescriptions by Status
                     </h5>
                     <canvas id="statusChart" style="max-height: 300px;"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions Card -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="bi bi-lightning-charge"></i> Quick Actions
-                    </h5>
-                    <div class="d-grid gap-3">
-                        <a href="/recipes/create" class="btn btn-outline-primary btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
-                            <i class="bi bi-file-earmark-plus me-2"></i> Create New Prescription
-                        </a>
-                        <a href="/diagnoses/create" class="btn btn-outline-danger btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
-                            <i class="bi bi-clipboard2-pulse me-2"></i> Add New Diagnosis
-                        </a>
-                        <a href="/sick-leaves/create" class="btn btn-outline-warning btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
-                            <i class="bi bi-file-medical me-2"></i> Issue Sick Leave
-                        </a>
-                        <a href="/customers/create" class="btn btn-outline-info btn-lg" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
-                            <i class="bi bi-person-plus me-2"></i> Add New Customer
-                        </a>
-                        <a href="/medicines/create-medicine" class="btn btn-outline-success btn-lg" sec:authorize="isAuthenticated()">
-                            <i class="bi bi-capsule me-2"></i> Add New Medicine
-                        </a>
-                        <a href="/doctors/create" class="btn btn-outline-dark btn-lg" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
-                            <i class="bi bi-person-badge me-2"></i> Add New Doctor
-                        </a>
-                        <a href="/reports" class="btn btn-outline-secondary btn-lg" sec:authorize="isAuthenticated()">
-                            <i class="bi bi-bar-chart me-2"></i> View Medical Reports
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

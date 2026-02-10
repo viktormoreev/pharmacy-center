@@ -35,14 +35,14 @@
                         <a class="nav-link" href="/" th:href="@{/}">🏠 Home</a>
                     </li>
                     
-                    <!-- Dashboard - visible to authenticated users -->
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <!-- Dashboard - visible only to medical staff roles -->
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
                         <a class="nav-link" href="/dashboard" th:href="@{/dashboard}">
                             📊 Dashboard
                         </a>
                     </li>
                     
-                    <li class="nav-item">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
                         <a class="nav-link" href="/medicines" th:href="@{/medicines}">
                             💊 Medicines
                         </a>
@@ -54,7 +54,7 @@
                             ➕ Add Medicine
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
                         <a class="nav-link" href="/doctors" th:href="@{/doctors}">
                             👨‍⚕️ Doctors
                         </a>
@@ -64,14 +64,9 @@
                             📋 Prescriptions
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
                         <a class="nav-link" href="/customers" th:href="@{/customers}">
                             👥 Customers
-                        </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
-                        <a class="nav-link" href="/diagnoses" th:href="@{/diagnoses}">
-                            🩺 Diagnoses
                         </a>
                     </li>
                     <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
@@ -79,9 +74,14 @@
                             🤒 Sick Leaves
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
                         <a class="nav-link" href="/reports" th:href="@{/reports}">
                             📊 Reports
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
+                        <a class="nav-link" href="/my/history" th:href="@{/my/history}">
+                            📄 My History
                         </a>
                     </li>
                 </ul>
@@ -91,7 +91,7 @@
                     <!-- User info for authenticated users -->
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <span class="nav-link">
-                            👤 <span sec:authentication="principal.attributes['name']">User</span>
+                            👤 <span th:text="${#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['name'] != null ? #authentication.principal.attributes['name'] : (#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['preferred_username'] != null ? #authentication.principal.attributes['preferred_username'] : (#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['email'] != null ? #authentication.principal.attributes['email'] : #authentication.name))}">User</span>
                         </span>
                     </li>
                     

@@ -1,7 +1,6 @@
 package com.inf.cscb869_pharmacy.controller;
 
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
-import com.inf.cscb869_pharmacy.diagnosis.service.DiagnosisService;
 import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import com.inf.cscb869_pharmacy.medicine.service.MedicineService;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
@@ -27,7 +26,6 @@ public class DashboardController {
     private final RecipeService recipeService;
     private final CustomerService customerService;
     private final DoctorService doctorService;
-    private final DiagnosisService diagnosisService;
     private final SickLeaveService sickLeaveService;
 
     @GetMapping
@@ -42,14 +40,12 @@ public class DashboardController {
         
         // Medical Records Statistics
         try {
-            model.addAttribute("totalDiagnoses", diagnosisService.getAllDiagnoses().size());
-            model.addAttribute("primaryDiagnoses", diagnosisService.getPrimaryDiagnoses().size());
+            model.addAttribute("totalDiagnoses", recipeService.countRecipesWithDiagnosis());
             model.addAttribute("totalSickLeaves", sickLeaveService.getAllSickLeaves().size());
             model.addAttribute("activeSickLeaves", sickLeaveService.getSickLeavesByStatus(SickLeaveStatus.ACTIVE).size());
         } catch (Exception e) {
             // If tables don't exist yet, set defaults
             model.addAttribute("totalDiagnoses", 0);
-            model.addAttribute("primaryDiagnoses", 0);
             model.addAttribute("totalSickLeaves", 0);
             model.addAttribute("activeSickLeaves", 0);
         }

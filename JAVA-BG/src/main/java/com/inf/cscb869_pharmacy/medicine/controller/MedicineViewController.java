@@ -7,6 +7,7 @@ import com.inf.cscb869_pharmacy.medicine.service.MedicineService;
 import com.inf.cscb869_pharmacy.util.MapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,12 +31,14 @@ public class MedicineViewController {
     }
 
     @GetMapping("/create-medicine")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showCreateMedicineForm(Model model) {
         model.addAttribute("medicine", new CreateMedicineDTO());
         return "/medicines/create-medicine";
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String createMedicine(@Valid @ModelAttribute("medicine") CreateMedicineDTO medicine, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "/medicines/create-medicine";
@@ -45,6 +48,7 @@ public class MedicineViewController {
     }
 
     @GetMapping("/edit-medicine/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String showEditMedicineForm(Model model, @PathVariable Long id) {
         MedicineDTO medicineDTO = this.medicineService.getMedicine(id);
         model.addAttribute("medicine", medicineDTO);
@@ -52,6 +56,7 @@ public class MedicineViewController {
     }
 
     @PostMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String updateMedicine(@PathVariable long id, @Valid @ModelAttribute("medicine") MedicineDTO medicineDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "/medicines/edit-medicine";
@@ -64,6 +69,7 @@ public class MedicineViewController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String deleteMedicine(@PathVariable int id) {
         this.medicineService.deleteMedicine(id);
         return "redirect:/medicines";
@@ -71,6 +77,5 @@ public class MedicineViewController {
 
 
 }
-
 
 

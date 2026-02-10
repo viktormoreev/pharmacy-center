@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+
+<div class="container mt-4">
+    <h2 class="mb-3">My Medical History</h2>
+    <p class="text-muted" th:if="${customer != null}">
+        Patient: <strong th:text="${customer.name}">Customer Name</strong>
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div th:if="${history == null or history.isEmpty()}" class="alert alert-info mb-0">
+                No examinations found yet.
+            </div>
+
+            <div th:if="${history != null and !history.isEmpty()}" class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Diagnosis</th>
+                        <th>Treatment</th>
+                        <th>Sick Leave</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="recipe : ${history}">
+                        <td th:text="${#temporals.format(recipe.creationDate, 'dd-MM-yyyy')}">01-01-2026</td>
+                        <td th:text="${recipe.doctor != null ? recipe.doctor.name : '-'}">Doctor</td>
+                        <td th:text="${recipe.diagnosis != null && !recipe.diagnosis.isBlank() ? recipe.diagnosis : '-'}">Diagnosis</td>
+                        <td>
+                            <span th:if="${recipe.recipeMedicines == null or recipe.recipeMedicines.isEmpty()}">-</span>
+                            <ul class="mb-0 ps-3" th:if="${recipe.recipeMedicines != null and !recipe.recipeMedicines.isEmpty()}">
+                                <li th:each="rm : ${recipe.recipeMedicines}"
+                                    th:text="${rm.medicine != null ? rm.medicine.name : 'Medicine'} + (rm.dosage != null ? ' - ' + rm.dosage : '')">
+                                    Medicine - dosage
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span th:if="${recipe.sickLeave}" class="badge bg-warning text-dark">
+                                Yes
+                            </span>
+                            <span th:if="${!recipe.sickLeave}" class="badge bg-secondary">
+                                No
+                            </span>
+                            <span th:if="${recipe.sickLeave and recipe.sickLeaveDays != null}"
+                                  th:text="' (' + ${recipe.sickLeaveDays} + ' days)'"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -14,7 +14,8 @@
         <h1 class="mb-4">🤒 Doctors Sick Leave Ranking</h1>
         <p class="lead">Doctors ranked by number of sick leaves issued</p>
 
-        <div th:if="${ranking != null and !ranking.isEmpty()}">
+        <div th:if="${ranking != null and !ranking.isEmpty()}"
+             th:with="totalCount=${#aggregates.sum(ranking.![count])}">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
@@ -39,8 +40,8 @@
                         <td>
                             <div class="progress" style="height: 25px;">
                                 <div class="progress-bar bg-danger" role="progressbar" 
-                                     th:style="'width: ' + ${stat.count * 100.0 / ranking.stream().mapToLong(s -> s.count).sum()} + '%'"
-                                     th:text="${#numbers.formatDecimal(stat.count * 100.0 / ranking.stream().mapToLong(s -> s.count).sum(), 1, 1)} + '%'">
+                                     th:style="'width: ' + ${(totalCount != null and totalCount > 0) ? (stat.count * 100.0 / totalCount) : 0} + '%'"
+                                     th:text="${#numbers.formatDecimal((totalCount != null and totalCount > 0) ? (stat.count * 100.0 / totalCount) : 0, 1, 1)} + '%'">
                                     50%
                                 </div>
                             </div>
@@ -51,7 +52,7 @@
                     <tr class="table-secondary">
                         <td colspan="2"><strong>Total</strong></td>
                         <td colspan="2">
-                            <strong th:text="${ranking.stream().mapToLong(s -> s.count).sum()}">100</strong> sick leaves
+                            <strong th:text="${totalCount}">100</strong> sick leaves
                         </td>
                     </tr>
                 </tfoot>

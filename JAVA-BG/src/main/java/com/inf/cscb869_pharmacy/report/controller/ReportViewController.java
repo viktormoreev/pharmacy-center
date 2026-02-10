@@ -2,15 +2,18 @@ package com.inf.cscb869_pharmacy.report.controller;
 
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
 import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
+import com.inf.cscb869_pharmacy.report.dto.MonthlyStatisticsDTO;
 import com.inf.cscb869_pharmacy.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * View Controller for Medical Reports and Statistics
@@ -39,12 +42,14 @@ public class ReportViewController {
      * Patients by diagnosis report
      */
     @GetMapping("/patients-by-diagnosis")
+    @PreAuthorize("hasAnyRole('DOCTOR','PHARMACIST','ADMIN')")
     public String patientsByDiagnosisForm(Model model) {
         log.info("Displaying patients by diagnosis form");
         return "reports/patients-by-diagnosis";
     }
 
     @PostMapping("/patients-by-diagnosis")
+    @PreAuthorize("hasAnyRole('DOCTOR','PHARMACIST','ADMIN')")
     public String patientsByDiagnosisReport(@RequestParam String diagnosis, Model model) {
         log.info("Searching patients with diagnosis: {}", diagnosis);
         model.addAttribute("diagnosis", diagnosis);
@@ -57,6 +62,7 @@ public class ReportViewController {
      * Common diagnoses report
      */
     @GetMapping("/common-diagnoses")
+    @PreAuthorize("hasAnyRole('DOCTOR','PHARMACIST','ADMIN')")
     public String commonDiagnoses(Model model) {
         log.info("Displaying common diagnoses report");
         model.addAttribute("diagnoses", reportService.getMostCommonDiagnoses());
@@ -67,6 +73,7 @@ public class ReportViewController {
      * Patients by primary doctor
      */
     @GetMapping("/patients-by-primary-doctor")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String patientsByPrimaryDoctorForm(Model model) {
         log.info("Displaying patients by primary doctor form");
         model.addAttribute("doctors", doctorService.getDoctors());
@@ -74,6 +81,7 @@ public class ReportViewController {
     }
 
     @GetMapping("/patients-by-primary-doctor/{doctorId}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String patientsByPrimaryDoctorReport(@PathVariable Long doctorId, Model model) {
         log.info("Showing patients for primary doctor ID: {}", doctorId);
         model.addAttribute("doctor", doctorService.getDoctor(doctorId));
@@ -86,6 +94,7 @@ public class ReportViewController {
      * Primary doctor statistics
      */
     @GetMapping("/primary-doctor-statistics")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String primaryDoctorStatistics(Model model) {
         log.info("Displaying primary doctor statistics");
         model.addAttribute("statistics", reportService.getPatientCountPerPrimaryDoctor());
@@ -106,6 +115,7 @@ public class ReportViewController {
      * Patient medical history
      */
     @GetMapping("/patient-history")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String patientHistoryForm(Model model) {
         log.info("Displaying patient history form");
         model.addAttribute("customers", customerService.getAllCustomers());
@@ -113,6 +123,7 @@ public class ReportViewController {
     }
 
     @GetMapping("/patient-history/{customerId}")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String patientHistoryReport(@PathVariable Long customerId, Model model) {
         log.info("Showing medical history for customer ID: {}", customerId);
         model.addAttribute("customer", customerService.getCustomerById(customerId));
@@ -161,7 +172,13 @@ public class ReportViewController {
     @GetMapping("/sick-leaves-by-month")
     public String sickLeavesByMonth(Model model) {
         log.info("Displaying sick leaves by month");
-        model.addAttribute("statistics", reportService.getSickLeavesByMonth());
+        List<MonthlyStatisticsDTO> statistics = reportService.getSickLeavesByMonth();
+        long maxCount = statistics.stream()
+                .mapToLong(stat -> stat.getCount() != null ? stat.getCount() : 0L)
+                .max()
+                .orElse(0L);
+        model.addAttribute("statistics", statistics);
+        model.addAttribute("maxCount", maxCount);
         return "reports/sick-leaves-by-month";
     }
 
@@ -179,6 +196,7 @@ public class ReportViewController {
      * Insurance status report
      */
     @GetMapping("/insurance-status")
+    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
     public String insuranceStatus(Model model) {
         log.info("Displaying insurance status report");
         model.addAttribute("validInsurance", reportService.getCustomersWithValidInsurance());

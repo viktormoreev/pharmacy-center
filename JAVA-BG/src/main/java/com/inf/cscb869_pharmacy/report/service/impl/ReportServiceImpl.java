@@ -125,14 +125,15 @@ public class ReportServiceImpl implements ReportService {
         
         return results.stream()
                 .map(row -> {
-                    Integer year = (Integer) row[0];
-                    Integer month = (Integer) row[1];
-                    Long count = (Long) row[2];
+                    // DB dialects may return different numeric types (Integer, Long, BigInteger, etc.)
+                    Integer year = row[0] instanceof Number ? ((Number) row[0]).intValue() : null;
+                    Integer month = row[1] instanceof Number ? ((Number) row[1]).intValue() : null;
+                    Long count = row[2] instanceof Number ? ((Number) row[2]).longValue() : 0L;
                     
                     return MonthlyStatisticsDTO.builder()
                             .year(year)
                             .month(month)
-                            .monthName(Month.of(month).name())
+                            .monthName((month != null && month >= 1 && month <= 12) ? Month.of(month).name() : "UNKNOWN")
                             .count(count)
                             .build();
                 })
