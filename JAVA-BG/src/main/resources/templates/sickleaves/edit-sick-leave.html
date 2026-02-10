@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Sick Leave</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+    <div class="container mt-4">
+        <h1 class="mb-4">✏️ Edit Sick Leave</h1>
+        
+        <form th:action="@{/sick-leaves/edit/{id}(id=${sickLeave.id})}" th:object="${sickLeave}" method="post">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="startDate" class="form-label">Start Date *</label>
+                            <input type="date" th:field="*{startDate}" id="startDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="durationDays" class="form-label">Duration (days) *</label>
+                            <input type="number" th:field="*{durationDays}" id="durationDays" class="form-control" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select th:field="*{status}" id="status" class="form-select">
+                                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">ACTIVE</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason</label>
+                        <textarea th:field="*{reason}" id="reason" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea th:field="*{notes}" id="notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">💾 Update Sick Leave</button>
+                <a th:href="@{/sick-leaves/view/{id}(id=${sickLeave.id})}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

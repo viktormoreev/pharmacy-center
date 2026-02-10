@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examinations Report - Reports</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">📅 Examinations Report</h1>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/reports/examinations}" method="post">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="doctorId" class="form-label">Doctor (Optional):</label>
+                            <select class="form-select" id="doctorId" name="doctorId">
+                                <option value="">All Doctors</option>
+                                <option th:each="doc : ${doctors}" 
+                                        th:value="${doc.id}" 
+                                        th:text="${doc.name}"
+                                        th:selected="${selectedDoctor != null and selectedDoctor.id == doc.id}">
+                                    Doctor Name
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="startDate" class="form-label">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" 
+                                   th:value="${startDate}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="endDate" class="form-label">End Date:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" 
+                                   th:value="${endDate}" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">🔍 Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div th:if="${examinations != null}">
+            <div class="alert alert-info">
+                <strong>Search Period:</strong> 
+                <span th:text="${#temporals.format(startDate, 'dd-MM-yyyy')}">01-01-2026</span> - 
+                <span th:text="${#temporals.format(endDate, 'dd-MM-yyyy')}">31-01-2026</span>
+                <br>
+                <strong>Doctor:</strong> 
+                <span th:if="${selectedDoctor != null}" th:text="${selectedDoctor.name}">Dr. Smith</span>
+                <span th:unless="${selectedDoctor != null}">All Doctors</span>
+                <br>
+                <strong>Total Examinations:</strong> <strong th:text="${examinations.size()}">0</strong>
+            </div>
+
+            <div th:if="${!examinations.isEmpty()}">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                            <th>Status</th>
+                            <th>Sick Leave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="exam : ${examinations}">
+                            <td th:text="${#temporals.format(exam.creationDate, 'dd-MM-yyyy')}">01-01-2026</td>
+                            <td th:text="${exam.customer.name}">John Doe</td>
+                            <td th:text="${exam.doctor.name}">Dr. Smith</td>
+                            <td th:text="${exam.diagnosis}">Flu</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${exam.status == T(com.inf.cscb869_pharmacy.recipe.entity.RecipeStatus).ACTIVE ? 'bg-success' : 'bg-secondary'}"
+                                      th:text="${exam.status}">ACTIVE</span>
+                            </td>
+                            <td>
+                                <span th:if="${exam.sickLeave}" class="badge bg-warning text-dark">
+                                    <span th:text="${exam.sickLeaveDays}">3</span> days
+                                </span>
+                                <span th:unless="${exam.sickLeave}" class="text-muted">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${examinations.isEmpty()}" class="alert alert-warning">
+                No examinations found for the selected criteria.
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/reports}" class="btn btn-secondary">← Back to Reports</a>
+        </div>
+    </div>
+
+    <script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

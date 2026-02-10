@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Diagnosis</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+    <div class="container mt-4">
+        <h1 class="mb-4">👁️ Diagnosis Details</h1>
+        
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${diagnosis.name}">Diagnosis Name</h5>
+                
+                <table class="table">
+                    <tr>
+                        <th style="width: 200px;">ID:</th>
+                        <td th:text="${diagnosis.id}">1</td>
+                    </tr>
+                    <tr>
+                        <th>ICD-10 Code:</th>
+                        <td>
+                            <span th:if="${diagnosis.icd10Code != null}" th:text="${diagnosis.icd10Code}" class="badge bg-secondary">J11.1</span>
+                            <span th:unless="${diagnosis.icd10Code != null}" class="text-muted">Not specified</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Name:</th>
+                        <td th:text="${diagnosis.name}">Influenza</td>
+                    </tr>
+                    <tr>
+                        <th>Description:</th>
+                        <td th:text="${diagnosis.description != null ? diagnosis.description : 'No description'}">Description here</td>
+                    </tr>
+                    <tr>
+                        <th>Severity:</th>
+                        <td>
+                            <span th:if="${diagnosis.severity != null}" th:text="${diagnosis.severity}" 
+                                  th:classappend="${diagnosis.severity.name() == 'CRITICAL' ? 'badge bg-danger' : 
+                                                   diagnosis.severity.name() == 'SEVERE' ? 'badge bg-warning' :
+                                                   diagnosis.severity.name() == 'MODERATE' ? 'badge bg-info' : 'badge bg-success'}">MILD</span>
+                            <span th:unless="${diagnosis.severity != null}" class="text-muted">Not specified</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Type:</th>
+                        <td>
+                            <span th:if="${diagnosis.isPrimary}" class="badge bg-primary">Primary Diagnosis</span>
+                            <span th:unless="${diagnosis.isPrimary}" class="badge bg-secondary">Secondary Diagnosis</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Diagnosis Date:</th>
+                        <td th:text="${#temporals.format(diagnosis.diagnosisDate, 'dd MMMM yyyy')}">26 January 2026</td>
+                    </tr>
+                    <tr th:if="${diagnosis.recipe != null}">
+                        <th>Related Recipe:</th>
+                        <td><a th:href="@{/recipes/view/{id}(id=${diagnosis.recipe.id})}" th:text="'Recipe #' + ${diagnosis.recipe.id}">Recipe #1</a></td>
+                    </tr>
+                    <tr th:if="${diagnosis.recipe != null and diagnosis.recipe.customer != null}">
+                        <th>Patient:</th>
+                        <td><a th:href="@{/customers/{id}(id=${diagnosis.recipe.customer.id})}" th:text="${diagnosis.recipe.customer.name}">Patient Name</a></td>
+                    </tr>
+                    <tr th:if="${diagnosis.notes != null}">
+                        <th>Notes:</th>
+                        <td th:text="${diagnosis.notes}">Notes here</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <a th:href="@{/diagnoses/edit/{id}(id=${diagnosis.id})}" class="btn btn-warning">✏️ Edit</a>
+            <form th:action="@{/diagnoses/delete/{id}(id=${diagnosis.id})}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this diagnosis?')">🗑️ Delete</button>
+            </form>
+            <a th:href="@{/diagnoses}" class="btn btn-secondary">⬅️ Back to List</a>
+        </div>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

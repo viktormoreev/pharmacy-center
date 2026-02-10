@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}">
+    <title>Create Customer</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-plus me-2"></i>Add New Customer
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/customers/create}" th:object="${customerDTO}" method="post">
+                        <div class="row">
+                            <!-- Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('name')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="name" 
+                                       th:field="*{name}" 
+                                       placeholder="Enter full name"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Name error
+                                </div>
+                            </div>
+
+                            <!-- Age -->
+                            <div class="col-md-6 mb-3">
+                                <label for="age" class="form-label">Age <span class="text-danger">*</span></label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('age')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="age" 
+                                       th:field="*{age}" 
+                                       min="0" 
+                                       max="150"
+                                       placeholder="Enter age"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">
+                                    Age error
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="email" 
+                                       th:field="*{email}" 
+                                       placeholder="email@example.com"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                    Email error
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('phone')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="phone" 
+                                       th:field="*{phone}" 
+                                       placeholder="+1234567890">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
+                                    Phone error
+                                </div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-6 mb-3">
+                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('dateOfBirth')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="dateOfBirth" 
+                                       th:field="*{dateOfBirth}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}">
+                                    Date error
+                                </div>
+                            </div>
+
+                            <!-- Insurance Number -->
+                            <div class="col-md-6 mb-3">
+                                <label for="insuranceNumber" class="form-label">Insurance Number</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('insuranceNumber')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="insuranceNumber" 
+                                       th:field="*{insuranceNumber}" 
+                                       placeholder="Enter insurance number">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('insuranceNumber')}" th:errors="*{insuranceNumber}">
+                                    Insurance error
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-md-12 mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" 
+                                          th:class="${#fields.hasErrors('address')} ? 'form-control is-invalid' : 'form-control'"
+                                          id="address" 
+                                          th:field="*{address}" 
+                                          rows="2"
+                                          placeholder="Enter full address"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">
+                                    Address error
+                                </div>
+                            </div>
+
+                            <!-- Allergies -->
+                            <div class="col-md-12 mb-3">
+                                <label for="allergies" class="form-label">Allergies</label>
+                                <textarea class="form-control" 
+                                          th:class="${#fields.hasErrors('allergies')} ? 'form-control is-invalid' : 'form-control'"
+                                          id="allergies" 
+                                          th:field="*{allergies}" 
+                                          rows="2"
+                                          placeholder="List any known allergies (e.g., Penicillin, Peanuts)"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('allergies')}" th:errors="*{allergies}">
+                                    Allergies error
+                                </div>
+                                <small class="form-text text-muted">Important for prescription safety</small>
+                            </div>
+
+                            <!-- Medical History -->
+                            <div class="col-md-12 mb-3">
+                                <label for="medicalHistory" class="form-label">Medical History</label>
+                                <textarea class="form-control" 
+                                          th:class="${#fields.hasErrors('medicalHistory')} ? 'form-control is-invalid' : 'form-control'"
+                                          id="medicalHistory" 
+                                          th:field="*{medicalHistory}" 
+                                          rows="3"
+                                          placeholder="Enter relevant medical conditions and history"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('medicalHistory')}" th:errors="*{medicalHistory}">
+                                    Medical history error
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="/customers" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Create Customer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Issue Sick Leave</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+    <div class="container mt-4">
+        <h1 class="mb-4">➕ Issue New Sick Leave</h1>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <form th:action="@{/sick-leaves/create}" th:object="${sickLeave}" method="post">
+            <input type="hidden" name="recipeId" th:if="${recipe != null}" th:value="${recipe.id}">
+            <input type="hidden" name="customerId" th:if="${selectedCustomer != null}" th:value="${selectedCustomer.id}">
+            <input type="hidden" name="doctorId" th:if="${!isDoctorUser and selectedDoctor != null}" th:value="${selectedDoctor.id}">
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="leaveNumber" class="form-label">Leave Number *</label>
+                            <input type="text" th:field="*{leaveNumber}" id="leaveNumber" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="issueDate" class="form-label">Issue Date *</label>
+                            <input type="date" th:field="*{issueDate}" id="issueDate" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3" th:if="${recipe == null}">
+                            <label for="recipeId" class="form-label">Recipe / Examination *</label>
+                            <select name="recipeId" id="recipeId" class="form-select" required>
+                                <option value="">-- Select Recipe --</option>
+                                <option th:each="r : ${recipes}"
+                                        th:value="${r.id}"
+                                        th:text="'#' + ${r.id} + ' | ' + ${r.customer.name} + ' | ' + ${#temporals.format(r.creationDate, 'dd-MM-yyyy')}">
+                                    Recipe
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3" th:if="${recipe != null}">
+                            <label class="form-label">Recipe / Examination</label>
+                            <div class="form-control-plaintext"
+                                 th:text="'#' + ${recipe.id} + ' | ' + ${recipe.customer.name} + ' | ' + ${#temporals.format(recipe.creationDate, 'dd-MM-yyyy')}">
+                                Recipe
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customerId" class="form-label">Patient *</label>
+                            <select name="customerId" id="customerId" class="form-select" required 
+                                    th:disabled="${selectedCustomer != null}">
+                                <option value="">-- Select Patient --</option>
+                                <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name}"
+                                        th:selected="${selectedCustomer != null and c.id == selectedCustomer.id}">Patient</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3" th:if="${!isDoctorUser}">
+                            <label for="doctorId" class="form-label">Doctor *</label>
+                            <select name="doctorId" id="doctorId" class="form-select" required
+                                    th:disabled="${selectedDoctor != null}">
+                                <option value="">-- Select Doctor --</option>
+                                <option th:each="d : ${doctors}" th:value="${d.id}" th:text="${d.name}"
+                                        th:selected="${selectedDoctor != null and d.id == selectedDoctor.id}">Doctor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3" th:if="${isDoctorUser}">
+                            <label class="form-label">Doctor</label>
+                            <div class="form-control-plaintext">
+                                Assigned automatically from your account.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="startDate" class="form-label">Start Date *</label>
+                            <input type="date" th:field="*{startDate}" id="startDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="durationDays" class="form-label">Duration (days) *</label>
+                            <input type="number" th:field="*{durationDays}" id="durationDays" class="form-control" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select th:field="*{status}" id="status" class="form-select">
+                                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">ACTIVE</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason</label>
+                        <textarea th:field="*{reason}" id="reason" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea th:field="*{notes}" id="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">💾 Issue Sick Leave</button>
+                <a th:href="@{/sick-leaves}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

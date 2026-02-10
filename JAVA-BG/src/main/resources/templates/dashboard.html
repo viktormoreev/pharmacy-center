@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-5">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </h1>
+            <p class="text-muted mb-0">System Overview and Statistics</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <!-- Total Medicines -->
+        <div class="col-md-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Medicines</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalMedicines}">0</h2>
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i>
+                                <span th:text="${medicinesNeedingRecipe}">0</span> need prescription
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-primary-subtle">
+                            <i class="bi bi-capsule-pill text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Prescriptions -->
+        <div class="col-md-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Prescriptions</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalRecipes}">0</h2>
+                            <small class="text-info">
+                                <i class="bi bi-activity"></i>
+                                <span th:text="${activeRecipes}">0</span> active
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-success-subtle">
+                            <i class="bi bi-file-medical text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Customers -->
+        <div class="col-md-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Customers</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalCustomers}">0</h2>
+                            <small class="text-success">
+                                <i class="bi bi-person-check"></i>
+                                <span th:text="${activeCustomers}">0</span> active
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-info-subtle">
+                            <i class="bi bi-people text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Doctors -->
+        <div class="col-md-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Doctors</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalDoctors}">0</h2>
+                            <small class="text-muted">
+                                <i class="bi bi-hospital"></i>
+                                Healthcare providers
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-warning-subtle">
+                            <i class="bi bi-person-badge text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Records Statistics Row -->
+    <div class="row g-4 mb-5" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+        <!-- Total Diagnoses -->
+        <div class="col-md-4">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Diagnoses</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalDiagnoses != null ? totalDiagnoses : 0}">0</h2>
+                            <small class="text-danger">
+                                <i class="bi bi-clipboard2-pulse"></i>
+                                <span th:text="${primaryDiagnoses != null ? primaryDiagnoses : 0}">0</span> primary
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-danger-subtle">
+                            <i class="bi bi-clipboard2-pulse text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Sick Leaves -->
+        <div class="col-md-4">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Active Sick Leaves</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${activeSickLeaves != null ? activeSickLeaves : 0}">0</h2>
+                            <small class="text-warning">
+                                <i class="bi bi-file-medical"></i>
+                                <span th:text="${totalSickLeaves != null ? totalSickLeaves : 0}">0</span> total issued
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-warning-subtle">
+                            <i class="bi bi-file-medical text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Records Summary -->
+        <div class="col-md-4">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Medical Records</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalRecipes}">0</h2>
+                            <small class="text-primary">
+                                <i class="bi bi-clipboard-data"></i>
+                                Complete examinations
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-primary-subtle">
+                            <i class="bi bi-clipboard-data text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-5">
+        <!-- Prescription Status Chart -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-pie-chart"></i> Prescriptions by Status
+                    </h5>
+                    <canvas id="statusChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-lightning-charge"></i> Quick Actions
+                    </h5>
+                    <div class="d-grid gap-3">
+                        <a href="/recipes/create" class="btn btn-outline-primary btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                            <i class="bi bi-file-earmark-plus me-2"></i> Create New Prescription
+                        </a>
+                        <a href="/diagnoses/create" class="btn btn-outline-danger btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                            <i class="bi bi-clipboard2-pulse me-2"></i> Add New Diagnosis
+                        </a>
+                        <a href="/sick-leaves/create" class="btn btn-outline-warning btn-lg" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                            <i class="bi bi-file-medical me-2"></i> Issue Sick Leave
+                        </a>
+                        <a href="/customers/create" class="btn btn-outline-info btn-lg" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                            <i class="bi bi-person-plus me-2"></i> Add New Customer
+                        </a>
+                        <a href="/medicines/create-medicine" class="btn btn-outline-success btn-lg" sec:authorize="isAuthenticated()">
+                            <i class="bi bi-capsule me-2"></i> Add New Medicine
+                        </a>
+                        <a href="/doctors/create" class="btn btn-outline-dark btn-lg" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                            <i class="bi bi-person-badge me-2"></i> Add New Doctor
+                        </a>
+                        <a href="/reports" class="btn btn-outline-secondary btn-lg" sec:authorize="isAuthenticated()">
+                            <i class="bi bi-bar-chart me-2"></i> View Medical Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-clock-history"></i> Recent Prescriptions
+                    </h5>
+                    <div th:if="${recentRecipes.isEmpty()}" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox display-1"></i>
+                        <p class="mt-3">No prescriptions yet</p>
+                    </div>
+                    <div th:unless="${recentRecipes.isEmpty()}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Doctor</th>
+                                    <th>Customer</th>
+                                    <th>Creation Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="recipe : ${recentRecipes}">
+                                    <td th:text="${recipe.id}">#1</td>
+                                    <td>
+                                        <i class="bi bi-person-badge text-primary me-1"></i>
+                                        <span th:text="${recipe.doctor?.name}">Dr. Smith</span>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-person text-info me-1"></i>
+                                        <span th:text="${recipe.customer?.name}">John Doe</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(recipe.creationDate, 'dd MMM yyyy')}">15 Jan 2026</td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${recipe.status.name() == 'ACTIVE'} ? 'bg-success' : 
+                                                             ${recipe.status.name() == 'FULFILLED'} ? 'bg-primary' : 
+                                                             ${recipe.status.name() == 'EXPIRED'} ? 'bg-warning' : 'bg-secondary'"
+                                              th:text="${recipe.status.name()}">ACTIVE</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/recipes/{id}(id=${recipe.id})}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/recipes" class="btn btn-outline-primary">
+                            View All Prescriptions <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    // Prescription Status Chart
+    const statusData = {
+        labels: ['Active', 'Fulfilled', 'Expired', 'Cancelled'],
+        datasets: [{
+            label: 'Prescriptions',
+            data: [
+                /*[[${activeRecipes}]]*/ 0,
+                /*[[${fulfilledRecipes}]]*/ 0,
+                /*[[${expiredRecipes}]]*/ 0,
+                /*[[${cancelledRecipes}]]*/ 0
+            ],
+            backgroundColor: [
+                'rgba(25, 135, 84, 0.8)',   // green
+                'rgba(13, 110, 253, 0.8)',  // blue
+                'rgba(255, 193, 7, 0.8)',   // yellow
+                'rgba(108, 117, 125, 0.8)'  // gray
+            ],
+            borderColor: [
+                'rgba(25, 135, 84, 1)',
+                'rgba(13, 110, 253, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(108, 117, 125, 1)'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    const statusConfig = {
+        type: 'doughnut',
+        data: statusData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed + ' prescription' + (context.parsed !== 1 ? 's' : '');
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    // Initialize chart
+    const statusChart = new Chart(
+        document.getElementById('statusChart'),
+        statusConfig
+    );
+</script>
+
+<style>
+    .stats-card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .stats-icon i {
+        font-size: 24px;
+    }
+    
+    .card {
+        border-radius: 10px;
+    }
+    
+    .btn-lg {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+</style>
+
+</body>
+</html>

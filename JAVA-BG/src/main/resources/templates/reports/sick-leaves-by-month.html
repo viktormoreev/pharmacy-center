@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sick Leaves by Month - Reports</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">📆 Sick Leaves by Month</h1>
+        <p class="lead">Monthly statistics for issued sick leaves</p>
+
+        <div th:if="${statistics != null and !statistics.isEmpty()}">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Number of Sick Leaves</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="stat : ${statistics}">
+                        <td th:text="${stat.year}">2026</td>
+                        <td th:text="${stat.monthName + ' (' + stat.month + ')'}">JANUARY (1)</td>
+                        <td>
+                            <span class="badge bg-warning text-dark" th:text="${stat.count}">10</span>
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     th:style="'width: ' + ${stat.count * 100.0 / statistics.stream().mapToLong(s -> s.count).max().orElse(1)} + '%'"
+                                     th:text="${stat.count}">
+                                    10
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-secondary">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td colspan="2">
+                            <strong th:text="${statistics.stream().mapToLong(s -> s.count).sum()}">100</strong> sick leaves
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div th:if="${statistics == null or statistics.isEmpty()}" class="alert alert-info">
+            No sick leave data available yet.
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/reports}" class="btn btn-secondary">← Back to Reports</a>
+        </div>
+    </div>
+
+    <script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

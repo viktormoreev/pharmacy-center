@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients by Diagnosis - Reports</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">🔍 Patients by Diagnosis</h1>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/reports/patients-by-diagnosis}" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="diagnosis" class="form-label">Diagnosis:</label>
+                            <input type="text" class="form-control" id="diagnosis" name="diagnosis" 
+                                   th:value="${diagnosis}" placeholder="Enter diagnosis (e.g., грип, хипертония)" required>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">🔍 Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div th:if="${diagnosis != null}">
+            <div class="alert alert-info">
+                <strong>Search Results:</strong> Found <strong th:text="${count}">0</strong> patient(s) 
+                with diagnosis containing "<strong th:text="${diagnosis}">N/A</strong>"
+            </div>
+
+            <div th:if="${patients != null and !patients.isEmpty()}">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>EGN</th>
+                            <th>Age</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Insurance Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="patient : ${patients}">
+                            <td th:text="${patient.id}">1</td>
+                            <td th:text="${patient.name}">John Doe</td>
+                            <td th:text="${patient.egn}">1234567890</td>
+                            <td th:text="${patient.age}">30</td>
+                            <td th:text="${patient.email}">john@example.com</td>
+                            <td th:text="${patient.phone}">+359888123456</td>
+                            <td>
+                                <span th:if="${patient.hasValidInsurance()}" class="badge bg-success">✓ Valid</span>
+                                <span th:unless="${patient.hasValidInsurance()}" class="badge bg-danger">✗ Invalid</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/reports/patient-history/{id}(id=${patient.id})}" 
+                                   class="btn btn-sm btn-info">View History</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${patients == null or patients.isEmpty()}" class="alert alert-warning">
+                No patients found with this diagnosis.
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/reports}" class="btn btn-secondary">← Back to Reports</a>
+        </div>
+    </div>
+
+    <script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

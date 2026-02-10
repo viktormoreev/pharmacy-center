@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Page Header -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-file-medical-fill"></i> Create New Prescription
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Error Message -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <form th:action="@{/recipes/create}" 
+                          th:object="${recipeDTO}" 
+                          method="post">
+
+                        <!-- Section 1: Basic Information -->
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-info-circle"></i> Basic Information
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="creationDate" class="form-label">Creation Date <span class="text-danger">*</span></label>
+                                <input type="date" 
+                                       th:field="*{creationDate}" 
+                                       id="creationDate"
+                                       th:class="${#fields.hasErrors('creationDate')} ? 'form-control is-invalid' : 'form-control'"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('creationDate')}" th:errors="*{creationDate}">Error</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="expirationDate" class="form-label">Expiration Date</label>
+                                <input type="date" 
+                                       th:field="*{expirationDate}" 
+                                       id="expirationDate"
+                                       class="form-control">
+                                <small class="form-text text-muted">Leave empty if no expiration</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select th:field="*{status}" 
+                                        id="status"
+                                        th:class="${#fields.hasErrors('status')} ? 'form-select is-invalid' : 'form-select'"
+                                        required>
+                                    <option th:each="status : ${statuses}" 
+                                            th:value="${status}" 
+                                            th:text="${status}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Doctor and Customer -->
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-people"></i> Doctor & Customer
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="doctorId" class="form-label">Doctor <span class="text-danger">*</span></label>
+                                
+                                <!-- If user is a doctor, show read-only field with their name -->
+                                <div th:if="${isDoctorUser}">
+                                    <input type="text" class="form-control" th:value="${currentDoctor.name}" readonly>
+                                    <input type="hidden" th:field="*{doctorId}">
+                                    <small class="text-muted">You can only create prescriptions for yourself</small>
+                                </div>
+                                
+                                <!-- If user is admin/pharmacist, show dropdown -->
+                                <div th:unless="${isDoctorUser}">
+                                    <select th:field="*{doctorId}" 
+                                            id="doctorId"
+                                            th:class="${#fields.hasErrors('doctorId')} ? 'form-select is-invalid' : 'form-select'"
+                                            required>
+                                        <option value="">Select Doctor</option>
+                                        <option th:each="doctor : ${doctors}" 
+                                                th:value="${doctor.id}" 
+                                                th:text="${doctor.name}">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('doctorId')}" th:errors="*{doctorId}">Error</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customerId" class="form-label">Customer <span class="text-danger">*</span></label>
+                                <select th:field="*{customerId}" 
+                                        id="customerId"
+                                        th:class="${#fields.hasErrors('customerId')} ? 'form-select is-invalid' : 'form-select'"
+                                        required>
+                                    <option value="">Select Customer</option>
+                                    <option th:each="customer : ${customers}" 
+                                            th:value="${customer.id}" 
+                                            th:text="${customer.name + ' (' + customer.email + ')'}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}">Error</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Medical Information -->
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-heart-pulse"></i> Medical Information
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="diagnosis" class="form-label">Diagnosis</label>
+                                <textarea th:field="*{diagnosis}" 
+                                          id="diagnosis"
+                                          class="form-control" 
+                                          rows="3"
+                                          placeholder="Enter diagnosis or reason for prescription..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <textarea th:field="*{notes}" 
+                                          id="notes"
+                                          class="form-control" 
+                                          rows="2"
+                                          placeholder="Any additional notes or instructions..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Prescribed Medicines -->
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-capsule"></i> Prescribed Medicines
+                        </h5>
+                        
+                        <div id="medicinesContainer">
+                            <!-- Dynamic medicine rows will be added here -->
+                            <div th:each="medicine, iterStat : *{medicines}" class="medicine-row card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="mb-0">Medicine #<span th:text="${iterStat.count}">1</span></h6>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-medicine" onclick="removeMedicine(this)">
+                                            <i class="bi bi-trash"></i> Remove
+                                        </button>
+                                    </div>
+                                    <div class="row g-3">
+                                        <input type="hidden" th:field="*{medicines[__${iterStat.index}__].id}">
+                                        
+                                        <div class="col-md-6">
+                                            <label class="form-label">Medicine <span class="text-danger">*</span></label>
+                                            <select th:field="*{medicines[__${iterStat.index}__].medicineId}" 
+                                                    class="form-select"
+                                                    required>
+                                                <option value="">Select Medicine</option>
+                                                <option th:each="med : ${medicines}" 
+                                                        th:value="${med.id}" 
+                                                        th:text="${med.name}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                                            <input type="number" 
+                                                   th:field="*{medicines[__${iterStat.index}__].quantity}" 
+                                                   class="form-control"
+                                                   min="1"
+                                                   required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Duration (days) <span class="text-danger">*</span></label>
+                                            <input type="number" 
+                                                   th:field="*{medicines[__${iterStat.index}__].durationDays}" 
+                                                   class="form-control"
+                                                   min="1"
+                                                   required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Dosage <span class="text-danger">*</span></label>
+                                            <input type="text" 
+                                                   th:field="*{medicines[__${iterStat.index}__].dosage}" 
+                                                   class="form-control"
+                                                   placeholder="e.g., 2 tablets twice daily"
+                                                   required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Instructions</label>
+                                            <textarea th:field="*{medicines[__${iterStat.index}__].instructions}" 
+                                                      class="form-control"
+                                                      rows="2"
+                                                      placeholder="e.g., Take with food, Avoid alcohol"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-primary mb-4" onclick="addMedicine()">
+                            <i class="bi bi-plus-circle"></i> Add Another Medicine
+                        </button>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a th:href="@{/recipes}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Create Prescription
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    let medicineCount = /*[[${recipeDTO.medicines.size()}]]*/ 1;
+    
+    // Store medicine options as JavaScript array
+    const medicineOptions = /*[[${medicines}]]*/ [];
+    
+    function addMedicine() {
+        const container = document.getElementById('medicinesContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'medicine-row card mb-3 shadow-sm';
+        
+        // Build medicine dropdown options
+        let medicineOptionsHtml = '<option value="">Select Medicine</option>';
+        medicineOptions.forEach(med => {
+            medicineOptionsHtml += `<option value="${med.id}">${med.name}</option>`;
+        });
+        
+        newRow.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Medicine #${medicineCount + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-medicine" onclick="removeMedicine(this)">
+                        <i class="bi bi-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Medicine <span class="text-danger">*</span></label>
+                        <select name="medicines[${medicineCount}].medicineId" class="form-select" required>
+                            ${medicineOptionsHtml}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" name="medicines[${medicineCount}].quantity" class="form-control" value="1" min="1" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Duration (days) <span class="text-danger">*</span></label>
+                        <input type="number" name="medicines[${medicineCount}].durationDays" class="form-control" value="7" min="1" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Dosage <span class="text-danger">*</span></label>
+                        <input type="text" name="medicines[${medicineCount}].dosage" class="form-control" placeholder="e.g., 2 tablets twice daily" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Instructions</label>
+                        <textarea name="medicines[${medicineCount}].instructions" class="form-control" rows="2" placeholder="e.g., Take with food, Avoid alcohol"></textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(newRow);
+        medicineCount++;
+        updateMedicineNumbers();
+    }
+
+    function removeMedicine(button) {
+        const medicineRows = document.querySelectorAll('.medicine-row');
+        if (medicineRows.length > 1) {
+            button.closest('.medicine-row').remove();
+            updateMedicineNumbers();
+        } else {
+            alert('At least one medicine must be prescribed!');
+        }
+    }
+
+    function updateMedicineNumbers() {
+        const medicineRows = document.querySelectorAll('.medicine-row');
+        medicineRows.forEach((row, index) => {
+            row.querySelector('h6').textContent = `Medicine #${index + 1}`;
+        });
+    }
+
+    // Set default creation date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const creationDateInput = document.getElementById('creationDate');
+        if (!creationDateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            creationDateInput.value = today;
+        }
+    });
+</script>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

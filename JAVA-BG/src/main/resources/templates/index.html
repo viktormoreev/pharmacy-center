@@ -1,11 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments :: head">
-</head>
+<head th:replace="~{fragments :: head}"></head>
 <body>
-<h1>Digital Pharmacy</h1>
-<nav th:replace="fragments :: navigation"></nav>
-<h1 th:text="'Hello and  ' + ${welcome}"></h1>
-<footer th:replace="fragments :: footer"></footer>
+    <header th:replace="~{fragments :: header}"></header>
+    <div th:replace="~{fragments :: navigation}"></div>
+    
+    <div class="main-container">
+        <div class="container">
+            <div class="welcome-section fade-in">
+                <h2 th:text="${welcome} ? ${welcome} : 'Welcome to Digital Pharmacy!'">Welcome to Digital Pharmacy!</h2>
+                <p>Your modern healthcare management solution for efficient pharmacy operations</p>
+                
+                <div class="feature-cards">
+                    <div class="feature-card">
+                        <div class="icon">💊</div>
+                        <h3>Manage Medicines</h3>
+                        <p>Comprehensive medicine inventory management system</p>
+                        <a href="/medicines" class="btn btn-primary mt-3">View Medicines</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="icon">➕</div>
+                        <h3>Add New Items</h3>
+                        <p>Quickly add new medicines to your inventory</p>
+                        <a href="/medicines/create-medicine" class="btn btn-success mt-3">Add Medicine</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>Track & Monitor</h3>
+                        <p>Monitor prescriptions and age restrictions</p>
+                        <a href="/medicines" class="btn btn-info mt-3">View Reports</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <div class="content-card">
+                        <h3 class="mb-3" style="color: var(--primary-color);">🎯 Quick Stats</h3>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div style="background: #e6f7ff; padding: 1.5rem; border-radius: 10px;">
+                                    <h4 style="color: var(--secondary-color); margin: 0;">Active System</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: #6c757d;">Ready to serve</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div style="background: #f6ffed; padding: 1.5rem; border-radius: 10px;">
+                                    <h4 style="color: var(--success-color); margin: 0;">Easy Access</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: #6c757d;">No login required</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div style="background: #fff7e6; padding: 1.5rem; border-radius: 10px;">
+                                    <h4 style="color: var(--warning-color); margin: 0;">Modern UI</h4>
+                                    <p style="margin: 0.5rem 0 0 0; color: #6c757d;">User-friendly design</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

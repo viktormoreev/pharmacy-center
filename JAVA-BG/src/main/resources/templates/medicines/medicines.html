@@ -1,27 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments :: head"></head>
+<head th:replace="~{fragments :: head}"></head>
 <body>
-<h1>Digital Pharmacy</h1>
-<nav th:replace="fragments :: navigation"></nav>
-<h4>Medicines:</h4>
-<div class="col-6">
-    <h3 th:unless="${medicines} and ${medicines.size()}">There are no medicines!</h3>
-    <table th:if="${medicines.size()>0}" class="table table-hover">
-        <th>Name</th>
-        <th>Age</th>
-        <th>Needs Recipe</th>
-        <th>Edit</th>
-        <th>Delete</th>
-        <tr th:each="medicine : ${medicines}">
-            <td th:text="${medicine.name}"></td>
-            <td th:text="${medicine.ageAppropriateness}"></td>
-            <td th:text="${medicine.needsRecipe}"></td>
-            <td><a class="btn btn-info" th:href="@{'/medicines/edit-medicine/'+${medicine.id}}">Edit</a></td>
-            <td><a class="btn btn-danger" th:href="@{'/medicines/delete/'+${medicine.id}}">Delete</a></td>
-        </tr>
-    </table>
-</div>
-<footer th:replace="fragments :: footer"></footer>
+    <header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+    
+    <div class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="page-title">💊 Medicine Inventory</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <!-- Empty State -->
+                    <div th:unless="${medicines} and ${medicines.size()}" class="content-card empty-state">
+                        <div class="icon">📦</div>
+                        <h3>No Medicines Found</h3>
+                        <p>Start building your inventory by adding your first medicine</p>
+                        <a href="/medicines/create-medicine" class="btn btn-success btn-lg">
+                            ➕ Add Your First Medicine
+                        </a>
+                    </div>
+                    
+                    <!-- Medicines Table -->
+                    <div th:if="${medicines.size() > 0}" class="content-card fade-in">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h4 class="mb-1" style="color: #2c3e50;">All Medicines</h4>
+                                <p class="text-muted mb-0" th:text="'Total: ' + ${medicines.size()} + ' medicine(s)'">Total medicines</p>
+                            </div>
+                            <a href="/medicines/create-medicine" class="btn btn-success">
+                                ➕ Add New Medicine
+                            </a>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>💊 Medicine Name</th>
+                                        <th>🎂 Min Age</th>
+                                        <th>📋 Prescription</th>
+                                        <th class="text-center">⚙️ Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="medicine : ${medicines}">
+                                        <td>
+                                            <strong th:text="${medicine.name}" style="color: #2c3e50;">Medicine Name</strong>
+                                        </td>
+                                        <td>
+                                            <span th:text="${medicine.ageAppropriateness} + '+ years'" class="text-muted">Age</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${medicine.needsRecipe}" class="badge-yes">✓ Required</span>
+                                            <span th:unless="${medicine.needsRecipe}" class="badge-no">✗ Not Required</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm btn-info mr-2" th:href="@{'/medicines/edit-medicine/'+${medicine.id}}">
+                                                ✏️ Edit
+                                            </a>
+                                            <a class="btn btn-sm btn-danger" th:href="@{'/medicines/delete/'+${medicine.id}}"
+                                               onclick="return confirm('Are you sure you want to delete this medicine?')">
+                                                🗑️ Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

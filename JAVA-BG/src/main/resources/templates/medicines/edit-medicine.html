@@ -1,21 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments :: head"></head>
+<head th:replace="~{fragments :: head}"></head>
 <body>
-<h1>Digital Pharmacy</h1>
-<nav th:replace="fragments :: navigation"></nav>
-<h4>Edit Medicine</h4>
-<div class="col-6">
-    <form action="#" th:action="@{/medicines/update/{id}(id=${medicine.id})}" th:object="${medicine}" method="post">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input class="form-control" type="text" th:field="*{name}" placeholder="Name" id="name">
-            <input class="form-control" type="text" th:field="*{ageAppropriateness}" placeholder="Age Appropriateness" id="ageAppropriateness">
-            <input class="form-control" type="text" th:field="*{needsRecipe}" placeholder="Needs Recipe" id="needsRecipe">
+    <header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+    
+    <div class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="page-title">✏️ Edit Medicine</h2>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="content-card fade-in">
+                        <div class="mb-4">
+                            <h4 style="color: #2c3e50;">Update Medicine Information</h4>
+                            <p class="text-muted">Modify the details below to update this medicine</p>
+                        </div>
+                        
+                        <form action="#" th:action="@{/medicines/update/{id}(id=${medicine.id})}" th:object="${medicine}" method="post">
+                            <div class="form-group">
+                                <label for="name">💊 Medicine Name <span style="color: var(--danger-color);">*</span></label>
+                                <input class="form-control" 
+                                       type="text" 
+                                       th:field="*{name}" 
+                                       placeholder="e.g., Paracetamol, Aspirin" 
+                                       id="name"
+                                       required>
+                                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ageAppropriateness">🎂 Minimum Age <span style="color: var(--danger-color);">*</span></label>
+                                <input class="form-control" 
+                                       type="number" 
+                                       th:field="*{ageAppropriateness}" 
+                                       placeholder="e.g., 18" 
+                                       id="ageAppropriateness"
+                                       min="0"
+                                       max="100"
+                                       required>
+                                <small class="form-text text-muted">Minimum age required to use this medicine</small>
+                                <span class="text-danger" th:if="${#fields.hasErrors('ageAppropriateness')}" th:errors="*{ageAppropriateness}">Age Error</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>📋 Prescription Required</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           th:field="*{needsRecipe}" 
+                                           id="needsRecipe">
+                                    <label class="form-check-label" for="needsRecipe">
+                                        This medicine requires a prescription
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">Check this box if a doctor's prescription is required</small>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="/medicines" class="btn btn-secondary">
+                                    ← Back to List
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    💾 Update Medicine
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-4 pt-4" style="border-top: 1px solid #e9ecef;">
+                            <a th:href="@{'/medicines/delete/'+${medicine.id}}" 
+                               class="btn btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this medicine? This action cannot be undone.')">
+                                🗑️ Delete This Medicine
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Update Medicine</button>
-    </form>
-</div>
-<footer th:replace="fragments :: footer"></footer>
+    </div>
+    
+    <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

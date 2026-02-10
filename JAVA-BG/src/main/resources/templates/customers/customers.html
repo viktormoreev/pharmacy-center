@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head}">
+    <title>Customers Management</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="mb-0">
+                <i class="bi bi-people me-2"></i>Customers Management
+            </h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="/customers/create" class="btn btn-primary" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                <i class="bi bi-plus-circle me-1"></i>Add New Customer
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <form method="get" action="/customers" th:action="@{/customers}">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-10">
+                        <label for="search" class="form-label">Search by Name</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="search" 
+                               name="search" 
+                               th:value="${search}"
+                               placeholder="Enter customer name">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-1"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div th:if="${customers.isEmpty()}" class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <p class="lead text-muted mt-3">No customers found</p>
+                <a href="/customers/create" class="btn btn-primary" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                    <i class="bi bi-plus-circle me-1"></i>Add First Customer
+                </a>
+            </div>
+
+            <div th:unless="${customers.isEmpty()}" class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Allergies</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="customer : ${customers}">
+                            <td th:text="${customer.id}">1</td>
+                            <td>
+                                <strong th:text="${customer.name}">John Doe</strong>
+                            </td>
+                            <td th:text="${customer.age}">30</td>
+                            <td th:text="${customer.email}">john@example.com</td>
+                            <td th:text="${customer.phone}">+1234567890</td>
+                            <td>
+                                <span th:if="${customer.allergies != null and !customer.allergies.isEmpty()}" 
+                                      class="badge bg-warning text-dark"
+                                      th:title="${customer.allergies}">
+                                    <i class="bi bi-exclamation-triangle"></i> Yes
+                                </span>
+                                <span th:if="${customer.allergies == null or customer.allergies.isEmpty()}" 
+                                      class="badge bg-success">
+                                    None
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/customers/{id}(id=${customer.id})}" 
+                                   class="btn btn-sm btn-outline-info"
+                                   title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a th:href="@{/customers/edit/{id}(id=${customer.id})}" 
+                                   class="btn btn-sm btn-outline-primary"
+                                   sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')"
+                                   title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/customers/delete/{id}(id=${customer.id})}" 
+                                      method="post" 
+                                      style="display: inline;"
+                                      sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')"
+                                      onsubmit="return confirm('Are you sure you want to deactivate this customer?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Deactivate">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

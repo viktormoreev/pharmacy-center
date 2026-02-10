@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sick Leaves</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+    <div class="container mt-4">
+        <h1 class="mb-4">🤒 Sick Leaves Management</h1>
+        
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div class="mb-3">
+            <a th:href="@{/sick-leaves/create}" class="btn btn-primary">➕ Issue New Sick Leave</a>
+        </div>
+        
+        <div th:if="${sickLeaves != null and !sickLeaves.isEmpty()}">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">All Sick Leaves (<span th:text="${sickLeaves.size()}">0</span>)</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Leave #</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Start Date</th>
+                                    <th>Days</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="sl : ${sickLeaves}">
+                                    <td><strong th:text="${sl.leaveNumber}">SL-20260126-A1B2</strong></td>
+                                    <td><a th:href="@{/customers/{id}(id=${sl.customer.id})}" th:text="${sl.customer.name}">Patient</a></td>
+                                    <td><a th:href="@{/doctors/{id}(id=${sl.doctor.id})}" th:text="${sl.doctor.name}">Doctor</a></td>
+                                    <td th:text="${#temporals.format(sl.startDate, 'dd-MM-yyyy')}">26-01-2026</td>
+                                    <td th:text="${sl.durationDays}">5</td>
+                                    <td th:text="${#temporals.format(sl.endDate, 'dd-MM-yyyy')}">31-01-2026</td>
+                                    <td>
+                                        <span th:text="${sl.status}" 
+                                              th:classappend="${sl.status.name() == 'ACTIVE' ? 'badge bg-success' :
+                                                               sl.status.name() == 'EXTENDED' ? 'badge bg-warning' :
+                                                               sl.status.name() == 'COMPLETED' ? 'badge bg-secondary' :
+                                                               'badge bg-danger'}">ACTIVE</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/sick-leaves/view/{id}(id=${sl.id})}" class="btn btn-sm btn-info">👁️ View</a>
+                                        <a th:href="@{/sick-leaves/edit/{id}(id=${sl.id})}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${sickLeaves == null or sickLeaves.isEmpty()}" class="alert alert-info">
+            No sick leaves found. <a th:href="@{/sick-leaves/create}">Issue the first sick leave</a>.
+        </div>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

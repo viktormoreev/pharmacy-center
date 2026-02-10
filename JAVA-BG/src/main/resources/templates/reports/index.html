@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Reports - Pharmacy Management System</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/custom-style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navigation}"></div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">📊 Medical Reports & Statistics</h1>
+                <p class="lead">Справки и отчети за медицинската система</p>
+            </div>
+        </div>
+
+        <!-- Patient Reports -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="mb-3">👥 Patient Reports</h3>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🔍 Patients by Diagnosis</h5>
+                        <p class="card-text">Search for patients with a specific diagnosis</p>
+                        <a th:href="@{/reports/patients-by-diagnosis}" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 Patient Medical History</h5>
+                        <p class="card-text">View complete medical history for a patient</p>
+                        <a th:href="@{/reports/patient-history}" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🏥 Patients by Primary Doctor</h5>
+                        <p class="card-text">List patients registered with a primary doctor</p>
+                        <a th:href="@{/reports/patients-by-primary-doctor}" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🛡️ Insurance Status</h5>
+                        <p class="card-text">View patients' insurance validity status</p>
+                        <a th:href="@{/reports/insurance-status}" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Reports -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="mb-3">👨‍⚕️ Doctor Reports</h3>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">📊 Primary Doctor Statistics</h5>
+                        <p class="card-text">Patient count per primary doctor</p>
+                        <a th:href="@{/reports/primary-doctor-statistics}" class="btn btn-success">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🩺 Doctor Visit Statistics</h5>
+                        <p class="card-text">Number of examinations per doctor</p>
+                        <a th:href="@{/reports/doctor-visit-statistics}" class="btn btn-success">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🤒 Doctors Sick Leave Ranking</h5>
+                        <p class="card-text">Doctors ranked by sick leaves issued</p>
+                        <a th:href="@{/reports/doctors-sick-leave-ranking}" class="btn btn-success">View Report</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Reports -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="mb-3">🏥 Medical Reports</h3>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🦠 Common Diagnoses</h5>
+                        <p class="card-text">Most frequently occurring diagnoses</p>
+                        <a th:href="@{/reports/common-diagnoses}" class="btn btn-info">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">📅 Examinations Report</h5>
+                        <p class="card-text">Search examinations by date range</p>
+                        <a th:href="@{/reports/examinations}" class="btn btn-info">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">📆 Sick Leaves by Month</h5>
+                        <p class="card-text">Monthly statistics for sick leaves</p>
+                        <a th:href="@{/reports/sick-leaves-by-month}" class="btn btn-info">View Report</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <a th:href="@{/}" class="btn btn-secondary">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
