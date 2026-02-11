@@ -59,8 +59,8 @@ public interface SickLeaveRepository extends JpaRepository<SickLeave, Long> {
     /**
      * Count sick leaves by month
      */
-    @Query(value = "SELECT EXTRACT(YEAR FROM sl.start_date) AS year, " +
-            "EXTRACT(MONTH FROM sl.start_date) AS month, " +
+    @Query(value = "SELECT EXTRACT(YEAR FROM sl.start_date) AS yr, " +
+            "EXTRACT(MONTH FROM sl.start_date) AS mn, " +
             "COUNT(*) AS cnt " +
             "FROM sick_leave sl " +
             "GROUP BY EXTRACT(YEAR FROM sl.start_date), EXTRACT(MONTH FROM sl.start_date) " +

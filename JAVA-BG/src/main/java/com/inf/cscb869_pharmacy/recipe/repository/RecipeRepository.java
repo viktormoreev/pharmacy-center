@@ -84,8 +84,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     /**
      * Count sick leaves by month
      */
-    @Query(value = "SELECT EXTRACT(YEAR FROM r.creation_date) AS year, " +
-            "EXTRACT(MONTH FROM r.creation_date) AS month, " +
+    @Query(value = "SELECT EXTRACT(YEAR FROM r.creation_date) AS yr, " +
+            "EXTRACT(MONTH FROM r.creation_date) AS mn, " +
             "COUNT(*) AS cnt " +
             "FROM recipe r " +
             "WHERE r.sick_leave = TRUE " +

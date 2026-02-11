@@ -4,6 +4,22 @@
 
 ---
 
+## Status Update (February 10, 2026)
+
+### Done
+
+- Keycloak integration is active for login and role-based authorization
+- Realm role mapping (`ADMIN`, `DOCTOR`, `PHARMACIST`, `CUSTOMER`) is consumed by Spring Security
+- UI behavior is role-personalized for MVP flows
+
+### Left To Verify
+
+- Ensure each Keycloak user email/username maps to the correct internal DB person record
+- Remove any remaining name mismatch in UI (example: navbar doctor vs prescription doctor name)
+- Keep Keycloak users and seeded DB demo data synchronized before presentations
+
+---
+
 ## 📋 Overview
 
 This guide will help you set up Keycloak as an external authentication system with role-based access control for your pharmacy application.

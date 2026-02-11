@@ -1,68 +1,41 @@
 # Developer Task Checklist
 
-Updated: February 9, 2026
+Updated: February 10, 2026
 
-## Current Status Snapshot
+## Done
 
-- [x] Medicine module (entity, repository, service, API, UI)
-- [x] Doctor module (entity, repository, service, UI)
-- [x] Customer module (entity, repository, service, API, UI)
-- [x] Recipe module (entity relationships, service, API, UI)
-- [x] Diagnosis module (entity, repository, service, API, UI)
-- [x] Sick Leave module (entity, repository, service, API, UI)
-- [x] Dashboard (controller + UI)
-- [x] Reports module (service, API, UI templates)
-- [x] Keycloak/OAuth2 security integration
-- [ ] Doctor API controller (missing)
-- [ ] Authentication user lifecycle in app (local register/profile/password screens)
-- [ ] Order/transaction system
-- [ ] Robust test suite (only minimal Spring Boot test exists)
-- [ ] DB migrations (Flyway/Liquibase)
+- [x] Core modules working: Medicines, Doctors, Customers, Prescriptions/Recipes, Diagnoses, Sick Leaves
+- [x] Keycloak/OAuth2 login with role extraction (ADMIN/DOCTOR/PHARMACIST/CUSTOMER)
+- [x] Role-based UI cleanup:
+- [x] CUSTOMER sees only own history area (no dashboard shortcut in top menu)
+- [x] DOCTOR has read-only access to lists/details where required
+- [x] Medicine management restricted by role (MVP RBAC tightening)
+- [x] Customer self-history page added (own examinations/history)
+- [x] Reports pages wired and accessible from reports index
+- [x] Sick leave monthly report fixed for PostgreSQL:
+- [x] Replaced `YEAR/MONTH` usage with `EXTRACT(...)`
+- [x] Fixed Thymeleaf max calculation crash on `/reports/sick-leaves-by-month`
+- [x] Demo seed expanded in `src/main/resources/data.sql` for presentation scenarios
 
-## Evidence-Based Module Status
+## In Progress / Needs Verification
 
-### 1) Core Medical Modules
-- [x] Medicines: implemented
-- [x] Doctors: implemented (web CRUD)
-- [x] Customers: implemented (web + API CRUD)
-- [x] Recipes/Prescriptions: implemented (web + API + relationships)
+- [ ] Verify end-to-end Keycloak user to DB person mapping by email/username
+- [ ] Verify doctor identity consistency in UI (navbar doctor vs prescription doctor name)
+- [ ] Final pass of role visibility on all menu entries for each role account
 
-### 2) Extended Medical Records
-- [x] Diagnoses: implemented (web + API + search/filter/statistics)
-- [x] Sick Leaves: implemented (web + API + lifecycle actions)
-
-### 3) Reporting and Dashboard
-- [x] Dashboard page and controller
-- [x] Report service + report controllers
-- [x] Report templates for required report categories
-
-### 4) Security
-- [x] Spring Security + OAuth2/Keycloak configured
-- [x] Route-level role restrictions configured
-- [ ] Internal app user registration/profile management not implemented
-
-### 5) Quality and Delivery
-- [ ] Unit/integration coverage for services/controllers/repositories
-- [ ] Test plan for critical business workflows
-- [ ] DB migration tooling and migration scripts under version control
-
-## Priority Tasks (Next)
+## Left To Be Done
 
 ### High Priority
-- [ ] Add automated tests for Customer, Recipe, and Report flows
-- [ ] Add migrations with Flyway/Liquibase and remove schema drift risk
-- [ ] Add Doctor REST API controller for module parity
+
+- [ ] Add automated tests for RBAC + report flows (especially doctor/customer scopes)
+- [ ] Add centralized error handling page/API format instead of raw Whitelabel errors
 
 ### Medium Priority
-- [ ] Remove legacy/duplicate Java packages that are no longer used
-- [ ] Improve global exception handling and consistent API error format
-- [ ] Add pagination for list-heavy endpoints/views
+
+- [ ] Add pagination/filtering for larger list pages
+- [ ] Add data integrity checks for cross-entity consistency (doctor/customer/recipe links)
+- [ ] Add one-click demo dataset reset script for presentation mode
 
 ### Low Priority
-- [ ] Add OpenAPI/Swagger docs
-- [ ] Add UI quality-of-life improvements (toasts, loading states, 404/500 pages)
 
-## Done in This Cleanup
-
-- [x] Revalidated current module status from source code and templates
-- [x] Replaced outdated checklist with current state
+- [ ] Add OpenAPI/Swagger docs for main APIs
