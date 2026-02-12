@@ -36,45 +36,45 @@
                     </li>
                     
                     <!-- Dashboard - visible only to medical staff roles -->
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/dashboard" th:href="@{/dashboard}">
                             📊 Dashboard
                         </a>
                     </li>
                     
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/medicines" th:href="@{/medicines}">
                             💊 Medicines
                         </a>
                     </li>
                     
                     <!-- Show these only for authenticated users -->
-                    <li class="nav-item" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link" href="/medicines/create-medicine" th:href="@{/medicines/create-medicine}">
                             ➕ Add Medicine
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/doctors" th:href="@{/doctors}">
                             👨‍⚕️ Doctors
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/recipes" th:href="@{/recipes}">
                             📋 Prescriptions
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/customers" th:href="@{/customers}">
                             👥 Customers
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/sick-leaves" th:href="@{/sick-leaves}">
                             🤒 Sick Leaves
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                    <li class="nav-item" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                         <a class="nav-link" href="/reports" th:href="@{/reports}">
                             📊 Reports
                         </a>

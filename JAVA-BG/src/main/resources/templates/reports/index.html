@@ -18,12 +18,12 @@
         <div class="alert alert-info" sec:authorize="hasRole('DOCTOR')">
             Doctor mode: you can use examination and sick-leave focused reports.
         </div>
-        <div class="alert alert-info" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+        <div class="alert alert-info" sec:authorize="hasRole('ADMIN')">
             Pharmacist/Admin mode: full access to all report categories.
         </div>
 
         <div class="row g-3 mt-1">
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR','PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Examinations</h5>
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR','PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Doctor Visit Stats</h5>
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR','PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Sick Leave Ranking</h5>
@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR','PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Patients by Diagnosis</h5>
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Patient History</h5>
@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR','PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Common Diagnoses</h5>
@@ -83,7 +83,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Primary Doctor Stats</h5>
@@ -93,7 +93,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Insurance Status</h5>
@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-4" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+            <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Sick Leaves by Month</h5>

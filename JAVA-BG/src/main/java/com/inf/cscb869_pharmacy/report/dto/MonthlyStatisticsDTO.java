@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for monthly statistics (sick leaves by month)
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

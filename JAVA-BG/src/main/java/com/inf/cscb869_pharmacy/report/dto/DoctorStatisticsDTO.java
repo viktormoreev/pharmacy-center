@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for doctor statistics (visits, patients, sick leaves)
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

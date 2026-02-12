@@ -27,19 +27,17 @@ public class SickLeaveServiceImpl implements SickLeaveService {
 
     @Override
     public SickLeave createSickLeave(SickLeave sickLeave) {
-        log.info("Creating new sick leave for patient: {}", sickLeave.getCustomer().getId());
-        
-        // Generate unique leave number if not provided
+        Long recipeId = sickLeave.getRecipe() != null ? sickLeave.getRecipe().getId() : null;
+        log.info("Creating new sick leave for recipe ID: {}", recipeId);
+
         if (sickLeave.getLeaveNumber() == null || sickLeave.getLeaveNumber().isEmpty()) {
             sickLeave.setLeaveNumber(generateLeaveNumber());
         }
-        
-        // Set issue date if not provided
+
         if (sickLeave.getIssueDate() == null) {
             sickLeave.setIssueDate(LocalDate.now());
         }
-        
-        // Set default status if not provided
+
         if (sickLeave.getStatus() == null) {
             sickLeave.setStatus(SickLeaveStatus.ACTIVE);
         }
@@ -93,14 +91,14 @@ public class SickLeaveServiceImpl implements SickLeaveService {
     @Transactional(readOnly = true)
     public List<SickLeave> getSickLeavesByCustomerId(Long customerId) {
         log.info("Fetching sick leaves for customer ID: {}", customerId);
-        return sickLeaveRepository.findByCustomerIdOrderByStartDateDesc(customerId);
+        return sickLeaveRepository.findByRecipeCustomerIdOrderByStartDateDesc(customerId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SickLeave> getSickLeavesByDoctorId(Long doctorId) {
         log.info("Fetching sick leaves for doctor ID: {}", doctorId);
-        return sickLeaveRepository.findByDoctorIdOrderByIssueDateDesc(doctorId);
+        return sickLeaveRepository.findByRecipeDoctorIdOrderByIssueDateDesc(doctorId);
     }
 
     @Override

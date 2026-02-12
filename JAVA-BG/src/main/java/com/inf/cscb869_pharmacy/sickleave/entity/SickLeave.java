@@ -1,8 +1,6 @@
 package com.inf.cscb869_pharmacy.sickleave.entity;
 
 import com.inf.cscb869_pharmacy.common.BaseEntity;
-import com.inf.cscb869_pharmacy.customer.entity.Customer;
-import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -12,10 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-/**
- * Sick Leave entity - represents a medical sick leave certificate
- * Болничен лист издаден от лекар
- */
 @Entity
 @Table(name = "sick_leaves")
 @Getter
@@ -32,16 +26,6 @@ public class SickLeave extends BaseEntity {
     @JoinColumn(name = "recipe_id", nullable = false)
     @NotNull(message = "Recipe is required")
     private Recipe recipe;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    @NotNull(message = "Patient is required")
-    private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
-    @NotNull(message = "Doctor is required")
-    private Doctor doctor;
 
     @NotNull(message = "Start date is required")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -77,7 +61,7 @@ public class SickLeave extends BaseEntity {
     @PreUpdate
     public void calculateEndDate() {
         if (startDate != null && durationDays != null) {
-            this.endDate = startDate.plusDays(durationDays - 1); // -1 because start day counts
+            this.endDate = startDate.plusDays(durationDays - 1);
         }
     }
 

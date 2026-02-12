@@ -31,8 +31,10 @@
                             <input type="text" th:field="*{leaveNumber}" id="leaveNumber" class="form-control" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="issueDate" class="form-label">Issue Date *</label>
-                            <input type="date" th:field="*{issueDate}" id="issueDate" class="form-control" required>
+                            <label for="issueDateDisplay" class="form-label">Issue Date *</label>
+                            <input type="date" id="issueDateDisplay" class="form-control" th:value="*{issueDate}" disabled>
+                            <input type="hidden" th:field="*{issueDate}">
+                            <div class="form-text">Issue date is set automatically to today.</div>
                         </div>
                     </div>
                     

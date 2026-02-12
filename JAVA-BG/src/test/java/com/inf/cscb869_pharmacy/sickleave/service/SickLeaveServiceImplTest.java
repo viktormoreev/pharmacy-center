@@ -1,7 +1,5 @@
 package com.inf.cscb869_pharmacy.sickleave.service;
 
-import com.inf.cscb869_pharmacy.customer.entity.Customer;
-import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
 import com.inf.cscb869_pharmacy.sickleave.entity.SickLeave;
 import com.inf.cscb869_pharmacy.sickleave.entity.SickLeaveStatus;
@@ -35,8 +33,6 @@ class SickLeaveServiceImplTest {
     void createSickLeaveShouldApplyDefaultsAndSave() {
         // Arrange: input without status/issueDate/leaveNumber defaults.
         SickLeave sickLeave = SickLeave.builder()
-                .customer(customer(1L))
-                .doctor(doctor())
                 .recipe(Recipe.builder().creationDate(LocalDate.now()).build())
                 .startDate(LocalDate.of(2026, 2, 1))
                 .durationDays(5)
@@ -148,22 +144,4 @@ class SickLeaveServiceImplTest {
                 .hasMessage("Sick leave not found with ID: 999");
     }
 
-    private static Customer customer(Long id) {
-        Customer customer = Customer.builder()
-                .name("Patient")
-                .egn("1234567890")
-                .age(30)
-                .build();
-        customer.setId(id);
-        return customer;
-    }
-
-    private static Doctor doctor() {
-        return Doctor.builder()
-                .name("Doctor")
-                .licenseNumber("UIN-1")
-                .specialty("General")
-                .isPrimaryDoctor(true)
-                .build();
-    }
 }

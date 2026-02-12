@@ -22,8 +22,24 @@
             <div class="card-body">
                 <table class="table">
                     <tr><th style="width: 200px;">Leave Number:</th><td><strong th:text="${sickLeave.leaveNumber}">SL-20260126-A1B2</strong></td></tr>
-                    <tr><th>Patient:</th><td><a th:href="@{/customers/{id}(id=${sickLeave.customer.id})}" th:text="${sickLeave.customer.name}">Patient</a></td></tr>
-                    <tr><th>Doctor:</th><td><a th:href="@{/doctors/{id}(id=${sickLeave.doctor.id})}" th:text="${sickLeave.doctor.name}">Doctor</a></td></tr>
+                    <tr>
+                        <th>Patient:</th>
+                        <td>
+                            <a th:if="${sickLeave.recipe != null and sickLeave.recipe.customer != null}"
+                               th:href="@{/customers/{id}(id=${sickLeave.recipe.customer.id})}"
+                               th:text="${sickLeave.recipe.customer.name}">Patient</a>
+                            <span th:if="${sickLeave.recipe == null or sickLeave.recipe.customer == null}" class="text-muted">N/A</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Doctor:</th>
+                        <td>
+                            <a th:if="${sickLeave.recipe != null and sickLeave.recipe.doctor != null}"
+                               th:href="@{/doctors/{id}(id=${sickLeave.recipe.doctor.id})}"
+                               th:text="${sickLeave.recipe.doctor.name}">Doctor</a>
+                            <span th:if="${sickLeave.recipe == null or sickLeave.recipe.doctor == null}" class="text-muted">N/A</span>
+                        </td>
+                    </tr>
                     <tr><th>Issue Date:</th><td th:text="${#temporals.format(sickLeave.issueDate, 'dd MMMM yyyy')}">26 January 2026</td></tr>
                     <tr><th>Start Date:</th><td th:text="${#temporals.format(sickLeave.startDate, 'dd MMMM yyyy')}">26 January 2026</td></tr>
                     <tr><th>Duration:</th><td><strong th:text="${sickLeave.durationDays}">5</strong> days</td></tr>

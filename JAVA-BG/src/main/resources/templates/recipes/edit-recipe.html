@@ -81,7 +81,7 @@
                                     <small class="text-muted">You can only edit your own prescriptions</small>
                                 </div>
                                 
-                                <!-- If user is admin/pharmacist, show dropdown -->
+                                <!-- If user is admin, show dropdown -->
                                 <div th:unless="${isDoctorUser}">
                                     <select th:field="*{doctorId}" 
                                             id="doctorId"

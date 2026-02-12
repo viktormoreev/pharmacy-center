@@ -42,12 +42,12 @@ class MedicineViewControllerSecurityWebMvcTest {
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @Test
-    @WithMockUser(roles = "PHARMACIST")
-    void showCreateMedicineFormShouldBeAllowedForPharmacist() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void showCreateMedicineFormShouldBeAllowedForAdmin() throws Exception {
         // Arrange: mapper is required when rendering some model paths.
         when(mapperUtil.getModelMapper()).thenReturn(new ModelMapper());
 
-        // Act + Assert: pharmacist can open create page.
+        // Act + Assert: admin can open create page.
         mockMvc.perform(get("/medicines/create-medicine"))
                 .andExpect(status().isOk());
     }
@@ -61,13 +61,13 @@ class MedicineViewControllerSecurityWebMvcTest {
     }
 
     @Test
-    @WithMockUser(roles = "PHARMACIST")
-    void createMedicineShouldBeAllowedForPharmacist() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void createMedicineShouldBeAllowedForAdmin() throws Exception {
         // Arrange: successful service create result.
         when(medicineService.createMedicine(any(CreateMedicineDTO.class)))
                 .thenReturn(new CreateMedicineDTO("Paracetamol", 12, false));
 
-        // Act + Assert: pharmacist can submit create form.
+        // Act + Assert: admin can submit create form.
         mockMvc.perform(post("/medicines/create")
                         .with(csrf())
                         .param("name", "Paracetamol")

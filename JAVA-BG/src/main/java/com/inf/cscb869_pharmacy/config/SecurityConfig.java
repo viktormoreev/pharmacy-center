@@ -26,80 +26,74 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+    private static final String[] STAFF_ROLES = {"DOCTOR", "ADMIN"};
+    private static final String[] ADMIN_ROLES = {"ADMIN"};
+
+    private static final String[] PUBLIC_PATHS = {
+            "/", "/index", "/css/**", "/js/**", "/images/**", "/login/**", "/oauth2/**"
+    };
+
+    private static final String[] MEDICINE_WRITE_PATHS = {
+            "/medicines/create-medicine",
+            "/medicines/create",
+            "/medicines/edit-medicine/**",
+            "/medicines/update/**",
+            "/medicines/delete/**"
+    };
+
+    private static final String[] STAFF_FEATURE_PATHS = {
+            "/api/recipes/**",
+            "/recipes/**",
+            "/diagnoses/**",
+            "/api/diagnoses/**",
+            "/sick-leaves/**",
+            "/api/sick-leaves/**",
+            "/dashboard/**",
+            "/reports/**",
+            "/api/reports/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")  // Disable CSRF for API endpoints only
-            )
-            .authorizeHttpRequests(authz -> authz
-                // Public endpoints
-                .requestMatchers("/", "/index", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/login/**", "/oauth2/**").permitAll()
-                
-                // Medicine endpoints - only medical staff can view/modify
-                .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/medicines/**").hasAnyRole("PHARMACIST", "ADMIN")
-                .requestMatchers("/medicines").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/medicines/create-medicine", "/medicines/create",
-                        "/medicines/edit-medicine/**", "/medicines/update/**", "/medicines/delete/**")
-                .hasAnyRole("PHARMACIST", "ADMIN")
-                .requestMatchers("/medicines/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                
-                // Recipe endpoints - Doctors and Pharmacists
-                .requestMatchers("/api/recipes/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/recipes/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-
-                // Diagnosis and sick leave modules - medical staff only
-                .requestMatchers("/diagnoses/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/diagnoses/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/sick-leaves/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/sick-leaves/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                
-                // Doctor management - doctor/pharmacist/admin can view, only pharmacist/admin can modify
-                .requestMatchers(HttpMethod.GET, "/doctors", "/doctors/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/doctors/**").hasAnyRole("PHARMACIST", "ADMIN")
-                .requestMatchers("/doctors/**").hasAnyRole("PHARMACIST", "ADMIN")
-                
-                // Customer management - doctor/pharmacist/admin can view, only pharmacist/admin can modify
-                .requestMatchers(HttpMethod.GET, "/customers", "/customers/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/customers/**").hasAnyRole("PHARMACIST", "ADMIN")
-                .requestMatchers("/customers/**").hasAnyRole("PHARMACIST", "ADMIN")
-
-                // Customer self portal
-                .requestMatchers("/my/**").hasRole("CUSTOMER")
-
-                // Dashboard and reports - medical staff roles only
-                .requestMatchers("/dashboard/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/reports/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                .requestMatchers("/api/reports/**").hasAnyRole("DOCTOR", "PHARMACIST", "ADMIN")
-                
-                // All other requests require authentication
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
                 )
-            )
-            .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo
-                    .oidcUserService(this.oidcUserService())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers("/api/medicines/**").hasAnyRole(ADMIN_ROLES)
+                        .requestMatchers(MEDICINE_WRITE_PATHS).hasAnyRole(ADMIN_ROLES)
+                        .requestMatchers("/medicines/**").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers(STAFF_FEATURE_PATHS).hasAnyRole(STAFF_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/doctors", "/doctors/**", "/customers", "/customers/**").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers("/api/doctors/**", "/api/customers/**").hasAnyRole(ADMIN_ROLES)
+                        .requestMatchers("/doctors/**", "/customers/**").hasAnyRole(ADMIN_ROLES)
+                        .requestMatchers("/my/**").hasRole("CUSTOMER")
+                        .anyRequest().authenticated()
                 )
-                .defaultSuccessUrl("/", true)
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            )
-            .oidcLogout(oidcLogout -> oidcLogout
-                .backChannel(Customizer.withDefaults())
-            );
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(this.oidcUserService())
+                        )
+                        .defaultSuccessUrl("/", true)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .oidcLogout(oidcLogout -> oidcLogout
+                        .backChannel(Customizer.withDefaults())
+                );
 
         return http.build();
     }
@@ -116,23 +110,20 @@ public class SecurityConfig {
         final OidcUserService delegate = new OidcUserService();
 
         return (userRequest) -> {
-            // Delegate to the default implementation for loading a user
             OidcUser oidcUser = delegate.loadUser(userRequest);
 
             Set<GrantedAuthority> authorities = new HashSet<>(oidcUser.getAuthorities());
 
-            // Extract client ID from the request
             String clientId = userRequest.getClientRegistration().getClientId();
-            
+
             System.out.println("=== DEBUGGING OIDC USER ===");
             System.out.println("User: " + oidcUser.getName());
             System.out.println("Client ID: " + clientId);
-            
-            // Try to get roles from ID token
+
             Map<String, Object> idTokenClaims = oidcUser.getIdToken().getClaims();
             System.out.println("ID Token Claims: " + idTokenClaims.keySet());
             System.out.println("Full Claims: " + idTokenClaims);
-            
+
             // 1. Try realm roles first (realm_access.roles)
             Object realmAccessObj = idTokenClaims.get("realm_access");
             if (realmAccessObj instanceof Map) {
@@ -143,17 +134,17 @@ public class SecurityConfig {
                     List<String> roles = (List<String>) realmAccess.get("roles");
                     System.out.println("Found realm roles: " + roles);
                     roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                        .forEach(authorities::add);
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                            .forEach(authorities::add);
                 }
             }
-            
+
             // 2. Try client roles (resource_access.{client-id}.roles)
             Object resourceAccessObj = idTokenClaims.get("resource_access");
             if (resourceAccessObj instanceof Map) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> resourceAccess = (Map<String, Object>) resourceAccessObj;
-                
+
                 // Get roles for our specific client
                 Object clientAccessObj = resourceAccess.get(clientId);
                 if (clientAccessObj instanceof Map) {
@@ -164,12 +155,12 @@ public class SecurityConfig {
                         List<String> clientRoles = (List<String>) clientAccess.get("roles");
                         System.out.println("Found client roles for " + clientId + ": " + clientRoles);
                         clientRoles.stream()
-                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                            .forEach(authorities::add);
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                                .forEach(authorities::add);
                     }
                 }
             }
-            
+
             System.out.println("Final authorities: " + authorities);
 
             // Create a new OidcUser with the combined authorities
@@ -177,15 +168,11 @@ public class SecurityConfig {
         };
     }
 
-    /**
-     * Converter to extract roles from Keycloak JWT token
-     */
     static class KeycloakRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
         @Override
         public Collection<GrantedAuthority> convert(Jwt jwt) {
-            // Extract realm_access.roles from JWT
             Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-            
+
             if (realmAccess == null || !realmAccess.containsKey("roles")) {
                 return List.of();
             }
@@ -194,8 +181,8 @@ public class SecurityConfig {
             List<String> roles = (List<String>) realmAccess.get("roles");
 
             return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
         }
     }
 }

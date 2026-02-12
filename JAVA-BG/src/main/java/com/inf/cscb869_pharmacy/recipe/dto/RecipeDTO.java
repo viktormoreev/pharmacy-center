@@ -11,9 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DTO for Recipe form submission
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,7 +44,6 @@ public class RecipeDTO {
     @Builder.Default
     private List<RecipeMedicineDTO> medicines = new ArrayList<>();
 
-    // Helper methods
     public void addMedicine(RecipeMedicineDTO medicine) {
         if (medicines == null) {
             medicines = new ArrayList<>();

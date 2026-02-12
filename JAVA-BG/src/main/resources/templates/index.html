@@ -30,7 +30,7 @@
                 <a class="btn btn-primary" th:href="@{/my/history}">Open My History</a>
             </div>
 
-            <div class="content-card" sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+            <div class="content-card" sec:authorize="hasRole('ADMIN')">
                 <h5 class="mb-2">Pharmacist/Admin View</h5>
                 <p class="mb-0 text-muted">You can manage medicines, patients, doctors, prescriptions, and full reporting.</p>
             </div>

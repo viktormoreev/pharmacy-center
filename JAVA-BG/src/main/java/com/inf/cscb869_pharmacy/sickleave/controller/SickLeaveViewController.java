@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +34,6 @@ public class SickLeaveViewController {
     private final CustomerService customerService;
     private final DoctorService doctorService;
 
-    /**
-     * List all sick leaves
-     * GET /sick-leaves
-     */
     @GetMapping
     public String listSickLeaves(Model model, Authentication authentication) {
         log.info("Displaying all sick leaves");
@@ -59,10 +56,6 @@ public class SickLeaveViewController {
         return "sickleaves/sick-leaves";
     }
 
-    /**
-     * Show form to create new sick leave
-     * GET /sick-leaves/create
-     */
     @GetMapping("/create")
     public String showCreateForm(
             @RequestParam(required = false) Long recipeId,
@@ -75,6 +68,7 @@ public class SickLeaveViewController {
         
         SickLeave sickLeave = new SickLeave();
         sickLeave.setLeaveNumber(sickLeaveService.generateLeaveNumber());
+        sickLeave.setIssueDate(LocalDate.now());
         
         model.addAttribute("sickLeave", sickLeave);
         model.addAttribute("statuses", SickLeaveStatus.values());
@@ -133,10 +127,6 @@ public class SickLeaveViewController {
         return "sickleaves/create-sick-leave";
     }
 
-    /**
-     * Create new sick leave
-     * POST /sick-leaves/create
-     */
     @PostMapping("/create")
     public String createSickLeave(
             @ModelAttribute SickLeave sickLeave,
@@ -159,30 +149,36 @@ public class SickLeaveViewController {
                 effectiveDoctorId = currentDoctor.getId();
             }
 
-            if (effectiveDoctorId == null) {
-                redirectAttributes.addFlashAttribute("error", "❌ Doctor is required");
-                return "redirect:/sick-leaves/create";
+            var recipe = recipeService.getRecipe(recipeId);
+            Long recipeDoctorId = recipe.getDoctor() != null ? recipe.getDoctor().getId() : null;
+            Long recipeCustomerId = recipe.getCustomer() != null ? recipe.getCustomer().getId() : null;
+
+            if (recipeDoctorId == null || recipeCustomerId == null) {
+                redirectAttributes.addFlashAttribute("error",
+                        "❌ Selected recipe is missing doctor or patient information.");
+                return "redirect:/sick-leaves/create?recipeId=" + recipeId;
             }
 
-            var recipe = recipeService.getRecipe(recipeId);
-            sickLeave.setRecipe(recipe);
-            sickLeave.setDoctor(doctorService.getDoctor(effectiveDoctorId));
+            if (effectiveDoctorId != null && !recipeDoctorId.equals(effectiveDoctorId)) {
+                redirectAttributes.addFlashAttribute("error",
+                        "❌ Selected doctor does not match the selected recipe.");
+                return "redirect:/sick-leaves/create?recipeId=" + recipeId;
+            }
 
-            Long effectiveCustomerId = customerId != null ? customerId : recipe.getCustomer().getId();
-            if (recipe.getCustomer() != null && !recipe.getCustomer().getId().equals(effectiveCustomerId)) {
+            if (customerId != null && !recipeCustomerId.equals(customerId)) {
                 redirectAttributes.addFlashAttribute("error",
                         "❌ Selected patient does not match the selected recipe.");
                 return "redirect:/sick-leaves/create?recipeId=" + recipeId;
             }
-            sickLeave.setCustomer(customerService.getCustomerById(effectiveCustomerId));
 
-            if (isDoctorUser(authentication) && recipe.getDoctor() != null &&
-                    !recipe.getDoctor().getId().equals(effectiveDoctorId)) {
+            if (isDoctorUser(authentication) && !recipeDoctorId.equals(effectiveDoctorId)) {
                 redirectAttributes.addFlashAttribute("error",
                         "⛔ Access Denied: You can issue sick leave only for your own recipes.");
                 return "redirect:/sick-leaves/create";
             }
-            
+
+            sickLeave.setRecipe(recipe);
+            sickLeave.setIssueDate(LocalDate.now());
             sickLeaveService.createSickLeave(sickLeave);
             redirectAttributes.addFlashAttribute("success", 
                 "✅ Sick leave created successfully! Number: " + sickLeave.getLeaveNumber());
@@ -196,10 +192,6 @@ public class SickLeaveViewController {
         }
     }
 
-    /**
-     * Show sick leave details
-     * GET /sick-leaves/view/{id}
-     */
     @GetMapping("/view/{id}")
     public String viewSickLeave(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
         log.info("Viewing sick leave with ID: {}", id);
@@ -218,10 +210,6 @@ public class SickLeaveViewController {
         return "sickleaves/view-sick-leave";
     }
 
-    /**
-     * Show form to edit sick leave
-     * GET /sick-leaves/edit/{id}
-     */
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
         log.info("Showing edit form for sick leave ID: {}", id);
@@ -237,10 +225,6 @@ public class SickLeaveViewController {
         return "sickleaves/edit-sick-leave";
     }
 
-    /**
-     * Update sick leave
-     * POST /sick-leaves/edit/{id}
-     */
     @PostMapping("/edit/{id}")
     public String updateSickLeave(
             @PathVariable Long id,
@@ -266,10 +250,6 @@ public class SickLeaveViewController {
         }
     }
 
-    /**
-     * Delete sick leave
-     * POST /sick-leaves/delete/{id}
-     */
     @PostMapping("/delete/{id}")
     public String deleteSickLeave(
             @PathVariable Long id,
@@ -294,10 +274,6 @@ public class SickLeaveViewController {
         return "redirect:/sick-leaves";
     }
 
-    /**
-     * Show form to extend sick leave
-     * GET /sick-leaves/extend/{id}
-     */
     @GetMapping("/extend/{id}")
     public String showExtendForm(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
         log.info("Showing extend form for sick leave ID: {}", id);
@@ -310,10 +286,6 @@ public class SickLeaveViewController {
         return "sickleaves/extend-sick-leave";
     }
 
-    /**
-     * Extend sick leave
-     * POST /sick-leaves/extend/{id}
-     */
     @PostMapping("/extend/{id}")
     public String extendSickLeave(
             @PathVariable Long id,
@@ -341,10 +313,6 @@ public class SickLeaveViewController {
         }
     }
 
-    /**
-     * Cancel sick leave
-     * POST /sick-leaves/cancel/{id}
-     */
     @PostMapping("/cancel/{id}")
     public String cancelSickLeave(
             @PathVariable Long id,
@@ -370,10 +338,6 @@ public class SickLeaveViewController {
         }
     }
 
-    /**
-     * Complete sick leave
-     * POST /sick-leaves/complete/{id}
-     */
     @PostMapping("/complete/{id}")
     public String completeSickLeave(
             @PathVariable Long id,
@@ -398,10 +362,6 @@ public class SickLeaveViewController {
         }
     }
 
-    /**
-     * View sick leaves by customer
-     * GET /sick-leaves/customer/{customerId}
-     */
     @GetMapping("/customer/{customerId}")
     public String viewCustomerSickLeaves(@PathVariable Long customerId, Model model) {
         log.info("Viewing sick leaves for customer ID: {}", customerId);
@@ -412,10 +372,6 @@ public class SickLeaveViewController {
         return "sickleaves/customer-sick-leaves";
     }
 
-    /**
-     * View sick leaves by doctor
-     * GET /sick-leaves/doctor/{doctorId}
-     */
     @GetMapping("/doctor/{doctorId}")
     public String viewDoctorSickLeaves(@PathVariable Long doctorId, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
         log.info("Viewing sick leaves for doctor ID: {}", doctorId);
@@ -452,7 +408,10 @@ public class SickLeaveViewController {
             return false;
         }
 
-        if (!currentDoctor.getId().equals(sickLeave.getDoctor().getId())) {
+        Long sickLeaveDoctorId = sickLeave.getRecipe() != null && sickLeave.getRecipe().getDoctor() != null
+                ? sickLeave.getRecipe().getDoctor().getId()
+                : null;
+        if (sickLeaveDoctorId == null || !currentDoctor.getId().equals(sickLeaveDoctorId)) {
             redirectAttributes.addFlashAttribute("error",
                     "⛔ Access Denied: You can only manage your own sick leaves.");
             return false;

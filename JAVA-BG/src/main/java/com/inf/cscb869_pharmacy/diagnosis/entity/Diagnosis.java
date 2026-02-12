@@ -9,10 +9,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-/**
- * Diagnosis entity - represents a medical diagnosis made by a doctor
- * Диагноза поставена от лекар при преглед
- */
 @Entity
 @Table(name = "diagnoses")
 @Getter

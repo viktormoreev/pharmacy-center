@@ -20,7 +20,7 @@
         </div>
         <a th:href="@{/recipes/create}" 
            class="btn btn-primary btn-lg"
-           sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+           sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
             <i class="bi bi-plus-circle"></i> New Prescription
         </a>
     </div>
@@ -121,7 +121,7 @@
                                     </a>
                                     <a th:href="@{/recipes/edit/{id}(id=${recipe.id})}" 
                                        class="btn btn-outline-primary"
-                                       sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')"
+                                       sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')"
                                        title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
@@ -155,7 +155,7 @@
                 </p>
                 <a th:href="@{/recipes/create}" 
                    class="btn btn-primary mt-3"
-                   sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+                   sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                     <i class="bi bi-plus-circle"></i> Create First Prescription
                 </a>
             </div>

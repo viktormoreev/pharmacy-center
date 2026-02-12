@@ -3,14 +3,19 @@ package com.inf.cscb869_pharmacy.customer.controller;
 import com.inf.cscb869_pharmacy.customer.dto.CustomerDTO;
 import com.inf.cscb869_pharmacy.customer.entity.Customer;
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
+import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * MVC Controller for Customer Management UI
@@ -21,12 +26,39 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CustomerViewController {
 
     private final CustomerService customerService;
+    private final DoctorService doctorService;
 
-    /**
-     * List all active customers
-     */
     @GetMapping
-    public String listCustomers(@RequestParam(required = false) String search, Model model) {
+    public String listCustomers(@RequestParam(required = false) String search, Model model, Authentication authentication) {
+        if (isDoctorUser(authentication)) {
+            String userEmail = getUserEmail(authentication);
+            var doctor = doctorService.findByEmail(userEmail).orElse(null);
+            model.addAttribute("isDoctorUser", true);
+
+            if (doctor == null) {
+                model.addAttribute("customers", List.of());
+                model.addAttribute("errorMessage",
+                        "Doctor account is not linked to a doctor record in the database. Please contact admin.");
+                if (search != null && !search.trim().isEmpty()) {
+                    model.addAttribute("search", search);
+                }
+                return "customers/customers";
+            }
+
+            List<Customer> customers = customerService.getCustomersByPrimaryDoctorId(doctor.getId());
+            if (search != null && !search.trim().isEmpty()) {
+                String lowered = search.trim().toLowerCase();
+                customers = customers.stream()
+                        .filter(c -> c.getName() != null && c.getName().toLowerCase().contains(lowered))
+                        .toList();
+                model.addAttribute("search", search);
+            }
+            model.addAttribute("currentDoctorName", doctor.getName());
+            model.addAttribute("customers", customers);
+            return "customers/customers";
+        }
+
+        model.addAttribute("isDoctorUser", false);
         if (search != null && !search.trim().isEmpty()) {
             model.addAttribute("customers", customerService.searchByName(search));
             model.addAttribute("search", search);
@@ -36,21 +68,15 @@ public class CustomerViewController {
         return "customers/customers";
     }
 
-    /**
-     * Show create customer form
-     */
     @GetMapping("/create")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("customerDTO", new CustomerDTO());
         return "customers/create-customer";
     }
 
-    /**
-     * Handle create customer form submission
-     */
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createCustomer(@Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
                                   BindingResult result,
                                   RedirectAttributes redirectAttributes) {
@@ -69,9 +95,6 @@ public class CustomerViewController {
         }
     }
 
-    /**
-     * Show customer details
-     */
     @GetMapping("/{id}")
     public String viewCustomer(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -84,11 +107,8 @@ public class CustomerViewController {
         }
     }
 
-    /**
-     * Show edit customer form
-     */
     @GetMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             Customer customer = customerService.getCustomerById(id);
@@ -102,11 +122,8 @@ public class CustomerViewController {
         }
     }
 
-    /**
-     * Handle edit customer form submission
-     */
     @PostMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String updateCustomer(@PathVariable Long id,
                                   @Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
                                   BindingResult result,
@@ -126,11 +143,8 @@ public class CustomerViewController {
         }
     }
 
-    /**
-     * Soft delete customer
-     */
     @PostMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteCustomer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             customerService.deleteCustomer(id);
@@ -141,7 +155,6 @@ public class CustomerViewController {
         return "redirect:/customers";
     }
 
-    // Helper methods to convert between Customer and CustomerDTO
     private Customer convertToEntity(CustomerDTO dto) {
         return Customer.builder()
                 .name(dto.getName())
@@ -169,5 +182,27 @@ public class CustomerViewController {
         dto.setMedicalHistory(customer.getMedicalHistory());
         dto.setInsuranceNumber(customer.getInsuranceNumber());
         return dto;
+    }
+
+    private boolean isDoctorUser(Authentication authentication) {
+        if (authentication == null || authentication.getAuthorities() == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_DOCTOR".equals(a.getAuthority()));
+    }
+
+    private String getUserEmail(Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser) {
+            String email = oidcUser.getEmail();
+            if (email != null && !email.isBlank()) {
+                return email;
+            }
+            Object preferredUsername = oidcUser.getClaims().get("preferred_username");
+            if (preferredUsername != null) {
+                return preferredUsername.toString();
+            }
+        }
+        return authentication != null ? authentication.getName() : null;
     }
 }

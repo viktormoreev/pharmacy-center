@@ -31,14 +31,14 @@ public class MedicineViewController {
     }
 
     @GetMapping("/create-medicine")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateMedicineForm(Model model) {
         model.addAttribute("medicine", new CreateMedicineDTO());
         return "/medicines/create-medicine";
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createMedicine(@Valid @ModelAttribute("medicine") CreateMedicineDTO medicine, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "/medicines/create-medicine";
@@ -48,7 +48,7 @@ public class MedicineViewController {
     }
 
     @GetMapping("/edit-medicine/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showEditMedicineForm(Model model, @PathVariable Long id) {
         MedicineDTO medicineDTO = this.medicineService.getMedicine(id);
         model.addAttribute("medicine", medicineDTO);
@@ -56,7 +56,7 @@ public class MedicineViewController {
     }
 
     @PostMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String updateMedicine(@PathVariable long id, @Valid @ModelAttribute("medicine") MedicineDTO medicineDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "/medicines/edit-medicine";
@@ -69,7 +69,7 @@ public class MedicineViewController {
     }
 
     @GetMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('PHARMACIST','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteMedicine(@PathVariable int id) {
         this.medicineService.deleteMedicine(id);
         return "redirect:/medicines";

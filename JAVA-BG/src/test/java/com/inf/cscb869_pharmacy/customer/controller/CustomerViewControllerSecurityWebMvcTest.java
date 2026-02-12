@@ -2,6 +2,7 @@ package com.inf.cscb869_pharmacy.customer.controller;
 
 import com.inf.cscb869_pharmacy.config.SecurityConfig;
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
+import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,6 +30,9 @@ class CustomerViewControllerSecurityWebMvcTest {
     private CustomerService customerService;
 
     @MockBean
+    private DoctorService doctorService;
+
+    @MockBean
     private JwtDecoder jwtDecoder;
 
     @MockBean
@@ -36,7 +40,7 @@ class CustomerViewControllerSecurityWebMvcTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void customerCreateShouldBeAllowedForAdmin() throws Exception {
+    void customerCreateShouldAlsoBeAllowedForAdminWithDifferentPayload() throws Exception {
         // Arrange: successful service behavior for a valid create request.
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
         // Act + Assert: admin can submit create form and gets redirect.
@@ -50,11 +54,11 @@ class CustomerViewControllerSecurityWebMvcTest {
     }
 
     @Test
-    @WithMockUser(roles = "PHARMACIST")
-    void customerCreateShouldBeAllowedForPharmacist() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void customerCreateShouldBeAllowedForAdmin() throws Exception {
         // Arrange: successful service behavior for a valid create request.
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
-        // Act + Assert: pharmacist can submit create form and gets redirect.
+        // Act + Assert: admin can submit create form and gets redirect.
         mockMvc.perform(post("/customers/create")
                         .with(csrf())
                         .param("name", "Bob")

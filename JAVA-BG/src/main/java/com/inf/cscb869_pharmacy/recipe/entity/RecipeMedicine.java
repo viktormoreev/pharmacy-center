@@ -8,10 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-/**
- * Join entity representing a medicine in a recipe/prescription
- * with dosage and duration information.
- */
 @Entity
 @Table(name = "recipe_medicines")
 @Getter
@@ -29,32 +25,18 @@ public class RecipeMedicine extends BaseEntity {
     @JoinColumn(name = "medicine_id", nullable = false)
     private Medicine medicine;
 
-    /**
-     * Dosage instructions
-     * Example: "2 tablets twice daily", "10ml every 6 hours"
-     */
     @NotBlank(message = "Dosage is required")
     @Column(nullable = false, length = 500)
     private String dosage;
 
-    /**
-     * Duration of treatment in days
-     */
     @NotNull(message = "Duration is required")
     @Min(value = 1, message = "Duration must be at least 1 day")
     @Column(nullable = false)
     private Integer durationDays;
 
-    /**
-     * Additional instructions or notes
-     * Example: "Take with food", "Avoid alcohol"
-     */
     @Column(length = 1000)
     private String instructions;
 
-    /**
-     * Quantity prescribed
-     */
     @Min(value = 1, message = "Quantity must be at least 1")
     @Column(nullable = false)
     @Builder.Default

@@ -18,7 +18,7 @@
             </a>
             <a th:href="@{/recipes/edit/{id}(id=${recipe.id})}" 
                class="btn btn-primary"
-               sec:authorize="hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')">
+               sec:authorize="hasAnyRole('DOCTOR', 'ADMIN')">
                 <i class="bi bi-pencil"></i> Edit
             </a>
         </div>

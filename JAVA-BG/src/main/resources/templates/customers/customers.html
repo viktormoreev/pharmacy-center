@@ -14,9 +14,13 @@
             <h2 class="mb-0">
                 <i class="bi bi-people me-2"></i>Customers Management
             </h2>
+            <p class="text-muted mb-0" th:if="${isDoctorUser}">
+                Showing customers where you are the primary doctor
+                <span th:if="${currentDoctorName != null}" th:text="'(' + ${currentDoctorName} + ')'"></span>
+            </p>
         </div>
         <div class="col-md-6 text-end">
-            <a href="/customers/create" class="btn btn-primary" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+            <a href="/customers/create" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">
                 <i class="bi bi-plus-circle me-1"></i>Add New Customer
             </a>
         </div>
@@ -62,7 +66,7 @@
             <div th:if="${customers.isEmpty()}" class="text-center py-5">
                 <i class="bi bi-inbox display-1 text-muted"></i>
                 <p class="lead text-muted mt-3">No customers found</p>
-                <a href="/customers/create" class="btn btn-primary" sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')">
+                <a href="/customers/create" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-plus-circle me-1"></i>Add First Customer
                 </a>
             </div>
@@ -108,14 +112,14 @@
                                 </a>
                                 <a th:href="@{/customers/edit/{id}(id=${customer.id})}" 
                                    class="btn btn-sm btn-outline-primary"
-                                   sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')"
+                                   sec:authorize="hasRole('ADMIN')"
                                    title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <form th:action="@{/customers/delete/{id}(id=${customer.id})}" 
                                       method="post" 
                                       style="display: inline;"
-                                      sec:authorize="hasAnyRole('PHARMACIST', 'ADMIN')"
+                                      sec:authorize="hasRole('ADMIN')"
                                       onsubmit="return confirm('Are you sure you want to deactivate this customer?');">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Deactivate">
                                         <i class="bi bi-trash"></i>

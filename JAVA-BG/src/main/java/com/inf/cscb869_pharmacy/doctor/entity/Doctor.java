@@ -13,10 +13,6 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Doctor entity representing a medical professional in the system.
- * Doctors can examine patients, issue prescriptions, and serve as primary doctors.
- */
 @Entity
 @Getter
 @Setter

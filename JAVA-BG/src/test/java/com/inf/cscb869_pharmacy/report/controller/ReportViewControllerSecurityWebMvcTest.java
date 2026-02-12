@@ -41,14 +41,14 @@ class ReportViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "DOCTOR")
     void patientsByPrimaryDoctorShouldBeForbiddenForDoctor() throws Exception {
-        // This report is restricted to pharmacist/admin roles.
+        // This report is restricted to admin roles.
         mockMvc.perform(get("/reports/patients-by-primary-doctor"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = "PHARMACIST")
-    void apiReportsPathShouldPassSecurityForPharmacist() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void apiReportsPathShouldPassSecurityForAdmin() throws Exception {
         // No handler exists for this path; 404 means security allowed request through.
         mockMvc.perform(get("/api/reports/non-existing"))
                 .andExpect(status().isNotFound());

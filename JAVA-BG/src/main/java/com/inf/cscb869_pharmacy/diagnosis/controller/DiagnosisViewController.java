@@ -31,10 +31,6 @@ public class DiagnosisViewController {
     private final RecipeService recipeService;
     private final DoctorService doctorService;
 
-    /**
-     * List all diagnoses
-     * GET /diagnoses
-     */
     @GetMapping
     public String listDiagnoses(Model model, Authentication authentication) {
         log.info("Displaying all diagnoses");
@@ -57,10 +53,6 @@ public class DiagnosisViewController {
         return "diagnoses/diagnoses";
     }
 
-    /**
-     * Show form to create new diagnosis
-     * GET /diagnoses/create
-     */
     @GetMapping("/create")
     public String showCreateForm(
             @RequestParam(required = false) Long recipeId,
@@ -94,10 +86,6 @@ public class DiagnosisViewController {
         return "diagnoses/create-diagnosis";
     }
 
-    /**
-     * Create new diagnosis
-     * POST /diagnoses/create
-     */
     @PostMapping("/create")
     public String createDiagnosis(
             @ModelAttribute Diagnosis diagnosis,

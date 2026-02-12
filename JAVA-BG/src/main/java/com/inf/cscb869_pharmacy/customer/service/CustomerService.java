@@ -75,4 +75,9 @@ public interface CustomerService {
      * Check if email already exists
      */
     boolean emailExists(String email);
+
+    /**
+     * Get active customers assigned to a primary doctor.
+     */
+    List<Customer> getCustomersByPrimaryDoctorId(Long primaryDoctorId);
 }

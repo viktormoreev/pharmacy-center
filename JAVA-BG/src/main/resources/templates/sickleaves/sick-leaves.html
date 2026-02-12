@@ -44,8 +44,18 @@
                             <tbody>
                                 <tr th:each="sl : ${sickLeaves}">
                                     <td><strong th:text="${sl.leaveNumber}">SL-20260126-A1B2</strong></td>
-                                    <td><a th:href="@{/customers/{id}(id=${sl.customer.id})}" th:text="${sl.customer.name}">Patient</a></td>
-                                    <td><a th:href="@{/doctors/{id}(id=${sl.doctor.id})}" th:text="${sl.doctor.name}">Doctor</a></td>
+                                    <td>
+                                        <a th:if="${sl.recipe != null and sl.recipe.customer != null}"
+                                           th:href="@{/customers/{id}(id=${sl.recipe.customer.id})}"
+                                           th:text="${sl.recipe.customer.name}">Patient</a>
+                                        <span th:if="${sl.recipe == null or sl.recipe.customer == null}" class="text-muted">N/A</span>
+                                    </td>
+                                    <td>
+                                        <a th:if="${sl.recipe != null and sl.recipe.doctor != null}"
+                                           th:href="@{/doctors/{id}(id=${sl.recipe.doctor.id})}"
+                                           th:text="${sl.recipe.doctor.name}">Doctor</a>
+                                        <span th:if="${sl.recipe == null or sl.recipe.doctor == null}" class="text-muted">N/A</span>
+                                    </td>
                                     <td th:text="${#temporals.format(sl.startDate, 'dd-MM-yyyy')}">26-01-2026</td>
                                     <td th:text="${sl.durationDays}">5</td>
                                     <td th:text="${#temporals.format(sl.endDate, 'dd-MM-yyyy')}">31-01-2026</td>

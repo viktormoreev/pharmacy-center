@@ -16,6 +16,7 @@ import java.util.List;
 public class MedicineApiController {
     private final MedicineService medicineService;
     private final MapperUtil mapperUtil;
+
     @GetMapping
     public List<MedicineDTO> getMedicines() {
 

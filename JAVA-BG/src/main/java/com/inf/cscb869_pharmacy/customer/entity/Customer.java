@@ -11,10 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Customer/Patient entity representing a patient in the medical system.
- * Contains personal information, medical history, allergies, and insurance data.
- */
 @Entity
 @Table(name = "customers")
 @Getter

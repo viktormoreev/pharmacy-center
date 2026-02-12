@@ -676,12 +676,10 @@ WHERE NOT EXISTS (
 );
 
 -- Sick leaves table data (for sick leave module demo)
-INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+INSERT INTO sick_leaves (leave_number, recipe_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
 SELECT
     'SL-20260112-A1B2',
     (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-01-12' LIMIT 1),
-    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
-    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     '2026-01-12',
     5,
     '2026-01-16',
@@ -691,12 +689,10 @@ SELECT
     'Recovered without complications'
 WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260112-A1B2');
 
-INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+INSERT INTO sick_leaves (leave_number, recipe_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
 SELECT
     'SL-20260120-C3D4',
     (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1) AND creation_date = '2026-01-20' LIMIT 1),
-    (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1),
-    (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     '2026-01-20',
     7,
     '2026-01-26',
@@ -706,12 +702,10 @@ SELECT
     'Follow-up after completion'
 WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260120-C3D4');
 
-INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+INSERT INTO sick_leaves (leave_number, recipe_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
 SELECT
     'SL-20260310-E5F6',
     (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1),
-    (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1),
-    (SELECT id FROM doctor WHERE license_number = 'UIN-33333' LIMIT 1),
     '2026-03-10',
     3,
     '2026-03-12',
@@ -721,12 +715,10 @@ SELECT
     'Cancelled due to early symptom resolution'
 WHERE NOT EXISTS (SELECT 1 FROM sick_leaves WHERE leave_number = 'SL-20260310-E5F6');
 
-INSERT INTO sick_leaves (leave_number, recipe_id, customer_id, doctor_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
+INSERT INTO sick_leaves (leave_number, recipe_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
 SELECT
     'SL-20260601-G7H8',
     (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-06-01' LIMIT 1),
-    (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
-    (SELECT id FROM doctor WHERE license_number = 'UIN-11111' LIMIT 1),
     '2026-06-01',
     6,
     '2026-06-06',

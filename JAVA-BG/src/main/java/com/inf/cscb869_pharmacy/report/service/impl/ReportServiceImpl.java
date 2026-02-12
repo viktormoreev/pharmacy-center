@@ -19,9 +19,6 @@ import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of ReportService for generating medical reports and statistics
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -37,8 +34,7 @@ public class ReportServiceImpl implements ReportService {
         log.info("Finding patients with diagnosis: {}", diagnosis);
         
         List<Recipe> recipes = recipeRepository.findByDiagnosisContainingIgnoreCase(diagnosis);
-        
-        // Extract unique customers from recipes
+
         return recipes.stream()
                 .map(Recipe::getCustomer)
                 .distinct()

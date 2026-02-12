@@ -126,6 +126,20 @@ class CustomerServiceImplTest {
         verify(customerRepository).save(existing);
     }
 
+    @Test
+    void getCustomersByPrimaryDoctorIdShouldReturnOnlyActiveCustomers() {
+        Customer active = customer("Active", "active@pharmacy.com");
+        active.setActive(true);
+        Customer inactive = customer("Inactive", "inactive@pharmacy.com");
+        inactive.setActive(false);
+
+        when(customerRepository.findByPrimaryDoctorId(10L)).thenReturn(java.util.List.of(active, inactive));
+
+        java.util.List<Customer> result = customerService.getCustomersByPrimaryDoctorId(10L);
+
+        assertThat(result).containsExactly(active);
+    }
+
     private static Customer customer(String name, String email) {
         return Customer.builder()
                 .name(name)

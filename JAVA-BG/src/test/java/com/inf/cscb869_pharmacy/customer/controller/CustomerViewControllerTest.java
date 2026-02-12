@@ -3,18 +3,24 @@ package com.inf.cscb869_pharmacy.customer.controller;
 import com.inf.cscb869_pharmacy.customer.dto.CustomerDTO;
 import com.inf.cscb869_pharmacy.customer.entity.Customer;
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
+import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
+import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -27,6 +33,9 @@ class CustomerViewControllerTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private DoctorService doctorService;
+
     @InjectMocks
     private CustomerViewController customerViewController;
 
@@ -38,7 +47,7 @@ class CustomerViewControllerTest {
 
         // Act: call controller method directly.
         ExtendedModelMap model = new ExtendedModelMap();
-        String view = customerViewController.listCustomers(null, model);
+        String view = customerViewController.listCustomers(null, model, null);
 
         // Assert: expected template and model payload.
         assertThat(view).isEqualTo("customers/customers");
@@ -53,12 +62,65 @@ class CustomerViewControllerTest {
 
         // Act
         ExtendedModelMap model = new ExtendedModelMap();
-        String view = customerViewController.listCustomers("bo", model);
+        String view = customerViewController.listCustomers("bo", model, null);
 
         // Assert
         assertThat(view).isEqualTo("customers/customers");
         assertThat(model.getAttribute("customers")).isEqualTo(found);
         assertThat(model.getAttribute("search")).isEqualTo("bo");
+    }
+
+    @Test
+    void listCustomersShouldShowPrimaryPatientsForDoctor() {
+        Doctor doctor = Doctor.builder()
+                .name("Dr. John Smith")
+                .licenseNumber("UIN-12345")
+                .specialty("General")
+                .isPrimaryDoctor(true)
+                .email("doctor@pharmacy.com")
+                .build();
+        doctor.setId(11L);
+        when(doctorService.findByEmail("doctor@pharmacy.com")).thenReturn(Optional.of(doctor));
+
+        List<Customer> assigned = List.of(customer("Patient One", "one@pharmacy.com"));
+        when(customerService.getCustomersByPrimaryDoctorId(11L)).thenReturn(assigned);
+
+        OidcUser oidcUser = org.mockito.Mockito.mock(OidcUser.class);
+        when(oidcUser.getEmail()).thenReturn("doctor@pharmacy.com");
+        var auth = new UsernamePasswordAuthenticationToken(
+                oidcUser,
+                "n/a",
+                List.of(new SimpleGrantedAuthority("ROLE_DOCTOR"))
+        );
+
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = customerViewController.listCustomers(null, model, auth);
+
+        assertThat(view).isEqualTo("customers/customers");
+        assertThat(model.getAttribute("isDoctorUser")).isEqualTo(true);
+        assertThat(model.getAttribute("currentDoctorName")).isEqualTo("Dr. John Smith");
+        assertThat(model.getAttribute("customers")).isEqualTo(assigned);
+    }
+
+    @Test
+    void listCustomersShouldShowErrorWhenDoctorMappingMissing() {
+        when(doctorService.findByEmail("missing@pharmacy.com")).thenReturn(Optional.empty());
+
+        OidcUser oidcUser = org.mockito.Mockito.mock(OidcUser.class);
+        when(oidcUser.getEmail()).thenReturn("missing@pharmacy.com");
+        var auth = new UsernamePasswordAuthenticationToken(
+                oidcUser,
+                "n/a",
+                List.of(new SimpleGrantedAuthority("ROLE_DOCTOR"))
+        );
+
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = customerViewController.listCustomers(null, model, auth);
+
+        assertThat(view).isEqualTo("customers/customers");
+        assertThat(model.getAttribute("isDoctorUser")).isEqualTo(true);
+        assertThat(model.getAttribute("customers")).isEqualTo(List.of());
+        assertThat(model.getAttribute("errorMessage")).isNotNull();
     }
 
     @Test

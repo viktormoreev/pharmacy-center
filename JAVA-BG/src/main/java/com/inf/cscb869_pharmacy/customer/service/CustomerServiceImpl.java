@@ -122,6 +122,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Customer> getCustomersByPrimaryDoctorId(Long primaryDoctorId) {
+        return customerRepository.findByPrimaryDoctorId(primaryDoctorId).stream()
+                .filter(c -> Boolean.TRUE.equals(c.getActive()))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public long countCustomers() {
         return customerRepository.count();
     }

@@ -22,7 +22,7 @@
                         <h3>No Medicines Found</h3>
                         <p>Start building your inventory by adding your first medicine</p>
                         <a href="/medicines/create-medicine" class="btn btn-success btn-lg"
-                           sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+                           sec:authorize="hasRole('ADMIN')">
                             ➕ Add Your First Medicine
                         </a>
                     </div>
@@ -35,7 +35,7 @@
                                 <p class="text-muted mb-0" th:text="'Total: ' + ${medicines.size()} + ' medicine(s)'">Total medicines</p>
                             </div>
                             <a href="/medicines/create-medicine" class="btn btn-success"
-                               sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+                               sec:authorize="hasRole('ADMIN')">
                                 ➕ Add New Medicine
                             </a>
                         </div>
@@ -63,7 +63,7 @@
                                             <span th:unless="${medicine.needsRecipe}" class="badge-no">✗ Not Required</span>
                                         </td>
                                         <td class="text-center">
-                                            <span sec:authorize="hasAnyRole('PHARMACIST','ADMIN')">
+                                            <span sec:authorize="hasRole('ADMIN')">
                                                 <a class="btn btn-sm btn-info mr-2" th:href="@{'/medicines/edit-medicine/'+${medicine.id}}">
                                                     ✏️ Edit
                                                 </a>
@@ -72,7 +72,7 @@
                                                     🗑️ Delete
                                                 </a>
                                             </span>
-                                            <span class="text-muted" sec:authorize="!hasAnyRole('PHARMACIST','ADMIN')">Read only</span>
+                                            <span class="text-muted" sec:authorize="!hasRole('ADMIN')">Read only</span>
                                         </td>
                                     </tr>
                                 </tbody>

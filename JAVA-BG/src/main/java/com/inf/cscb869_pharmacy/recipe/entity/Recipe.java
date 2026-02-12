@@ -15,11 +15,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Recipe/Prescription entity representing a medical examination and prescription.
- * Contains diagnosis, medicines, dosage, treatment information, and sick leave data.
- * Представлява посещение при лекар с диагноза, лечение и евентуално болничен.
- */
 @Entity
 @Getter
 @Setter

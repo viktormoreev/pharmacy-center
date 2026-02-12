@@ -14,7 +14,7 @@
             <div class="card-header"><h5 class="mb-0">Current Information</h5></div>
             <div class="card-body">
                 <p><strong>Leave Number:</strong> <span th:text="${sickLeave.leaveNumber}">SL-20260126-A1B2</span></p>
-                <p><strong>Patient:</strong> <span th:text="${sickLeave.customer.name}">Patient</span></p>
+                <p><strong>Patient:</strong> <span th:text="${(sickLeave.recipe != null and sickLeave.recipe.customer != null) ? sickLeave.recipe.customer.name : 'N/A'}">Patient</span></p>
                 <p><strong>Current Duration:</strong> <span th:text="${sickLeave.durationDays}">5</span> days</p>
                 <p><strong>Current End Date:</strong> <span th:text="${#temporals.format(sickLeave.endDate, 'dd MMMM yyyy')}">31 January 2026</span></p>
             </div>

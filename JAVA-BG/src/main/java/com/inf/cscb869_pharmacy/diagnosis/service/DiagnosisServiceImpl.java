@@ -36,7 +36,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     public Diagnosis updateDiagnosis(Long id, Diagnosis diagnosis) {
         log.info("Updating diagnosis with ID: {}", id);
         Diagnosis existing = getDiagnosisById(id);
-        
+
         existing.setIcd10Code(diagnosis.getIcd10Code());
         existing.setName(diagnosis.getName());
         existing.setDescription(diagnosis.getDescription());
@@ -44,7 +44,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
         existing.setIsPrimary(diagnosis.getIsPrimary());
         existing.setSeverity(diagnosis.getSeverity());
         existing.setNotes(diagnosis.getNotes());
-        
+
         return diagnosisRepository.save(existing);
     }
 

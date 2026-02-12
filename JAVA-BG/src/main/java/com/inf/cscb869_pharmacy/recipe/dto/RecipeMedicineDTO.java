@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-/**
- * DTO for RecipeMedicine in forms
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

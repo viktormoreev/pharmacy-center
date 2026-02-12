@@ -19,9 +19,6 @@ public class CustomerApiController {
 
     private final CustomerService customerService;
 
-    /**
-     * Get all customers
-     */
     @GetMapping
     public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
@@ -31,9 +28,6 @@ public class CustomerApiController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Get all active customers
-     */
     @GetMapping("/active")
     public ResponseEntity<List<CustomerDTO>> getActiveCustomers() {
         List<Customer> customers = customerService.getActiveCustomers();
@@ -43,18 +37,12 @@ public class CustomerApiController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Get customer by ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
         Customer customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(convertToDTO(customer));
     }
 
-    /**
-     * Search customers by name
-     */
     @GetMapping("/search")
     public ResponseEntity<List<CustomerDTO>> searchByName(@RequestParam String name) {
         List<Customer> customers = customerService.searchByName(name);
@@ -64,9 +52,6 @@ public class CustomerApiController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Find customers by age range
-     */
     @GetMapping("/age-range")
     public ResponseEntity<List<CustomerDTO>> findByAgeRange(
             @RequestParam Integer minAge,
@@ -78,9 +63,6 @@ public class CustomerApiController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Find customers with specific allergy
-     */
     @GetMapping("/allergy")
     public ResponseEntity<List<CustomerDTO>> findByAllergy(@RequestParam String allergy) {
         List<Customer> customers = customerService.findByAllergy(allergy);
@@ -90,9 +72,6 @@ public class CustomerApiController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Create new customer
-     */
     @PostMapping
     public ResponseEntity<CustomerDTO> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         Customer customer = convertToEntity(customerDTO);
@@ -100,9 +79,6 @@ public class CustomerApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedCustomer));
     }
 
-    /**
-     * Update customer
-     */
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(
             @PathVariable Long id,
@@ -112,34 +88,24 @@ public class CustomerApiController {
         return ResponseEntity.ok(convertToDTO(updatedCustomer));
     }
 
-    /**
-     * Soft delete customer (set active to false)
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Hard delete customer
-     */
     @DeleteMapping("/{id}/hard")
     public ResponseEntity<Void> hardDeleteCustomer(@PathVariable Long id) {
         customerService.hardDeleteCustomer(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Check if email exists
-     */
     @GetMapping("/email-exists")
     public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
         boolean exists = customerService.emailExists(email);
         return ResponseEntity.ok(exists);
     }
 
-    // Conversion methods
     private CustomerDTO convertToDTO(Customer customer) {
         return CustomerDTO.builder()
                 .id(customer.getId())
