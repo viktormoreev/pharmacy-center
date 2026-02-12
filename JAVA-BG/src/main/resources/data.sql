@@ -654,6 +654,166 @@ WHERE NOT EXISTS (
       AND d.icd10_code = 'J30'
 );
 
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-01-12' LIMIT 1),
+    'J00',
+    'Acute nasopharyngitis (common cold)',
+    'Upper respiratory tract infection with mild fever',
+    '2026-01-12',
+    true,
+    'MILD',
+    'Rest and hydration recommended'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-01-12' LIMIT 1)
+      AND d.icd10_code = 'J00'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '5711309876' LIMIT 1) AND creation_date = '2026-01-15' LIMIT 1),
+    'M17.9',
+    'Osteoarthritis of knee, unspecified',
+    'Chronic joint pain and reduced mobility',
+    '2026-01-15',
+    true,
+    'MODERATE',
+    'Pain control and physical therapy advised'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '5711309876' LIMIT 1) AND creation_date = '2026-01-15' LIMIT 1)
+      AND d.icd10_code = 'M17.9'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1) AND creation_date = '2026-01-18' LIMIT 1),
+    'L23.9',
+    'Allergic contact dermatitis, unspecified cause',
+    'Skin inflammation with itching and irritation',
+    '2026-01-18',
+    true,
+    'MILD',
+    'Avoid allergen exposure and use topical treatment'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1) AND creation_date = '2026-01-18' LIMIT 1)
+      AND d.icd10_code = 'L23.9'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1) AND creation_date = '2026-01-20' LIMIT 1),
+    'J45.901',
+    'Unspecified asthma with acute exacerbation',
+    'Wheezing and shortness of breath',
+    '2026-01-20',
+    true,
+    'SEVERE',
+    'Short-term sick leave and inhalation therapy'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1) AND creation_date = '2026-01-20' LIMIT 1)
+      AND d.icd10_code = 'J45.901'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-02-05' LIMIT 1),
+    'Z09',
+    'Follow-up examination after treatment',
+    'Control visit with improved blood pressure',
+    '2026-02-05',
+    true,
+    'MILD',
+    'Continue current antihypertensive plan'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-02-05' LIMIT 1)
+      AND d.icd10_code = 'Z09'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-02-10' LIMIT 1),
+    'Z09.8',
+    'Follow-up examination, other specified',
+    'Post-viral recovery follow-up',
+    '2026-02-10',
+    true,
+    'MILD',
+    'No active symptoms at this visit'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1) AND creation_date = '2026-02-10' LIMIT 1)
+      AND d.icd10_code = 'Z09.8'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1) AND creation_date = '2026-02-14' LIMIT 1),
+    'E11.9',
+    'Type 2 diabetes mellitus without complications',
+    'Routine follow-up for glycemic control',
+    '2026-02-14',
+    true,
+    'MODERATE',
+    'Continue metformin and dietary control'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1) AND creation_date = '2026-02-14' LIMIT 1)
+      AND d.icd10_code = 'E11.9'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1),
+    'G43.9',
+    'Migraine, unspecified',
+    'Acute headache episode with reduced functionality',
+    '2026-03-10',
+    true,
+    'MODERATE',
+    'Symptomatic treatment and observation'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1) AND creation_date = '2026-03-10' LIMIT 1)
+      AND d.icd10_code = 'G43.9'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1) AND creation_date = '2026-04-12' LIMIT 1),
+    'L20.9',
+    'Atopic dermatitis, unspecified',
+    'Recurrent skin inflammation flare',
+    '2026-04-12',
+    true,
+    'MILD',
+    'Prescription cancelled after patient decision'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1) AND creation_date = '2026-04-12' LIMIT 1)
+      AND d.icd10_code = 'L20.9'
+);
+
+INSERT INTO diagnoses (recipe_id, icd10_code, name, description, diagnosis_date, is_primary, severity, notes)
+SELECT
+    (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-05-05' LIMIT 1),
+    'I10',
+    'Essential (primary) hypertension',
+    'Control visit for chronic hypertension',
+    '2026-05-05',
+    true,
+    'MODERATE',
+    'Medication adjusted and follow-up scheduled'
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnoses d
+    WHERE d.recipe_id = (SELECT id FROM recipe WHERE customer_id = (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1) AND creation_date = '2026-05-05' LIMIT 1)
+      AND d.icd10_code = 'I10'
+);
+
 -- Sick leaves table data (for sick leave module demo)
 INSERT INTO sick_leaves (leave_number, recipe_id, start_date, duration_days, end_date, reason, status, issue_date, notes)
 SELECT
