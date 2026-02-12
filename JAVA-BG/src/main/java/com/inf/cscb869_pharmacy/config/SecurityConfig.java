@@ -27,27 +27,37 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private static final String[] STAFF_ROLES = {"DOCTOR", "ADMIN"};
-    private static final String[] ADMIN_ROLES = {"ADMIN"};
 
     private static final String[] PUBLIC_PATHS = {
             "/", "/index", "/css/**", "/js/**", "/images/**", "/login/**", "/oauth2/**"
     };
 
-    private static final String[] MEDICINE_WRITE_PATHS = {
+    private static final String[] ADMIN_ONLY_PATHS = {
             "/medicines/create-medicine",
             "/medicines/create",
             "/medicines/edit-medicine/**",
             "/medicines/update/**",
-            "/medicines/delete/**"
+            "/medicines/delete/**",
+            "/doctors/create",
+            "/doctors/edit/**",
+            "/doctors/delete/**",
+            "/customers/create",
+            "/customers/edit/**",
+            "/customers/delete/**",
+            "/api/doctors/**",
+            "/api/customers/**"
     };
 
     private static final String[] STAFF_FEATURE_PATHS = {
+            "/medicines/**",
             "/api/recipes/**",
             "/recipes/**",
             "/diagnoses/**",
             "/api/diagnoses/**",
             "/sick-leaves/**",
             "/api/sick-leaves/**",
+            "/doctors/**",
+            "/customers/**",
             "/dashboard/**",
             "/reports/**",
             "/api/reports/**"
@@ -61,15 +71,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(PUBLIC_PATHS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole(STAFF_ROLES)
-                        .requestMatchers("/api/medicines/**").hasAnyRole(ADMIN_ROLES)
-                        .requestMatchers(MEDICINE_WRITE_PATHS).hasAnyRole(ADMIN_ROLES)
-                        .requestMatchers("/medicines/**").hasAnyRole(STAFF_ROLES)
-                        .requestMatchers(STAFF_FEATURE_PATHS).hasAnyRole(STAFF_ROLES)
-                        .requestMatchers(HttpMethod.GET, "/doctors", "/doctors/**", "/customers", "/customers/**").hasAnyRole(STAFF_ROLES)
-                        .requestMatchers("/api/doctors/**", "/api/customers/**").hasAnyRole(ADMIN_ROLES)
-                        .requestMatchers("/doctors/**", "/customers/**").hasAnyRole(ADMIN_ROLES)
                         .requestMatchers("/my/**").hasRole("CUSTOMER")
+                        .requestMatchers(ADMIN_ONLY_PATHS).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers("/api/medicines/**").hasRole("ADMIN")
+                        .requestMatchers(STAFF_FEATURE_PATHS).hasAnyRole(STAFF_ROLES)
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
