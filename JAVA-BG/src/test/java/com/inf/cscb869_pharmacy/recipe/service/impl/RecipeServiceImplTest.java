@@ -1,6 +1,7 @@
 package com.inf.cscb869_pharmacy.recipe.service.impl;
 
 import com.inf.cscb869_pharmacy.customer.entity.Customer;
+import com.inf.cscb869_pharmacy.diagnosis.entity.Diagnosis;
 import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
 import com.inf.cscb869_pharmacy.medicine.entity.Medicine;
 import com.inf.cscb869_pharmacy.recipe.dto.RecipeDTO;
@@ -41,10 +42,11 @@ class RecipeServiceImplTest {
                 .doctor(doctor("Dr. A", "UIN-1"))
                 .customer(customer("Alice", "1234567890"))
                 .status(RecipeStatus.ACTIVE)
-                .diagnosis("Flu")
+                .diagnoses(new ArrayList<>(List.of(diagnosis("Flu"))))
                 .notes("Rest")
                 .build();
         input.setId(10L);
+        input.getDiagnoses().forEach(d -> d.setRecipe(input));
 
         when(recipeRepository.save(input)).thenReturn(input);
         RecipeDTO result = recipeService.createRecipe(input);
@@ -52,7 +54,6 @@ class RecipeServiceImplTest {
         assertThat(result.getDoctorId()).isNotNull();
         assertThat(result.getCustomerId()).isNotNull();
         assertThat(result.getStatus()).isEqualTo(RecipeStatus.ACTIVE);
-        assertThat(result.getDiagnosis()).isEqualTo("Flu");
         verify(recipeRepository).save(input);
     }
 
@@ -63,12 +64,13 @@ class RecipeServiceImplTest {
                 .doctor(doctor("Dr. Old", "UIN-OLD"))
                 .customer(customer("Old Patient", "1234567891"))
                 .status(RecipeStatus.ACTIVE)
-                .diagnosis("Old diagnosis")
+                .diagnoses(new ArrayList<>(List.of(diagnosis("Old diagnosis"))))
                 .notes("Old notes")
                 .expirationDate(LocalDate.of(2026, 1, 15))
                 .recipeMedicines(new ArrayList<>())
                 .build();
         existing.setId(42L);
+        existing.getDiagnoses().forEach(d -> d.setRecipe(existing));
         existing.getRecipeMedicines().add(recipeMedicine("Old med", "1x daily", 3));
 
         Recipe update = Recipe.builder()
@@ -76,7 +78,7 @@ class RecipeServiceImplTest {
                 .doctor(doctor("Dr. New", "UIN-NEW"))
                 .customer(customer("New Patient", "1234567892"))
                 .status(RecipeStatus.FULFILLED)
-                .diagnosis("New diagnosis")
+                .diagnoses(new ArrayList<>(List.of(diagnosis("New diagnosis"))))
                 .notes("New notes")
                 .expirationDate(LocalDate.of(2026, 3, 1))
                 .recipeMedicines(List.of(
@@ -84,6 +86,7 @@ class RecipeServiceImplTest {
                         recipeMedicine("Vitamin C", "1x daily", 10)
                 ))
                 .build();
+        update.getDiagnoses().forEach(d -> d.setRecipe(update));
 
         when(recipeRepository.findById(42L)).thenReturn(Optional.of(existing));
         when(recipeRepository.save(existing)).thenReturn(existing);
@@ -93,9 +96,9 @@ class RecipeServiceImplTest {
         assertThat(existing.getDoctor().getName()).isEqualTo("Dr. New");
         assertThat(existing.getCustomer().getName()).isEqualTo("New Patient");
         assertThat(existing.getStatus()).isEqualTo(RecipeStatus.FULFILLED);
-        assertThat(existing.getDiagnosis()).isEqualTo("New diagnosis");
         assertThat(existing.getNotes()).isEqualTo("New notes");
         assertThat(existing.getExpirationDate()).isEqualTo(LocalDate.of(2026, 3, 1));
+        assertThat(existing.getDiagnoses()).extracting(Diagnosis::getName).containsExactly("New diagnosis");
 
         assertThat(existing.getRecipeMedicines()).hasSize(2);
         assertThat(existing.getRecipeMedicines())
@@ -192,6 +195,14 @@ class RecipeServiceImplTest {
                 .dosage(dosage)
                 .durationDays(durationDays)
                 .quantity(1)
+                .build();
+    }
+
+    private static Diagnosis diagnosis(String name) {
+        return Diagnosis.builder()
+                .name(name)
+                .diagnosisDate(LocalDate.of(2026, 2, 10))
+                .isPrimary(true)
                 .build();
     }
 }

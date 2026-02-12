@@ -88,11 +88,11 @@
                             <td th:text="${recipe.doctor != null ? recipe.doctor.name : 'N/A'}">Dr. Smith</td>
                             <td th:text="${recipe.customer != null ? recipe.customer.name : 'N/A'}">John Doe</td>
                             <td>
-                                <span th:if="${recipe.diagnosis != null && !recipe.diagnosis.isEmpty()}" 
-                                      th:text="${#strings.abbreviate(recipe.diagnosis, 50)}">
+                                <span th:if="${recipe.diagnosisSummary != null && !recipe.diagnosisSummary.isEmpty()}" 
+                                      th:text="${#strings.abbreviate(recipe.diagnosisSummary, 50)}">
                                     Diagnosis text...
                                 </span>
-                                <span th:if="${recipe.diagnosis == null || recipe.diagnosis.isEmpty()}" 
+                                <span th:if="${recipe.diagnosisSummary == null || recipe.diagnosisSummary.isEmpty()}" 
                                       class="text-muted fst-italic">
                                     No diagnosis
                                 </span>

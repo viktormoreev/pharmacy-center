@@ -56,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
         return results.stream()
                 .map(row -> DiagnosisReportDTO.builder()
                         .diagnosis((String) row[0])
-                        .count((Long) row[1])
+                        .count(row[1] instanceof Number ? ((Number) row[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -76,7 +76,7 @@ public class ReportServiceImpl implements ReportService {
         return results.stream()
                 .map(row -> DoctorStatisticsDTO.builder()
                         .doctorName((String) row[0])
-                        .count((Long) row[1])
+                        .count(row[1] instanceof Number ? ((Number) row[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -90,7 +90,7 @@ public class ReportServiceImpl implements ReportService {
         return results.stream()
                 .map(row -> DoctorStatisticsDTO.builder()
                         .doctorName((String) row[0])
-                        .count((Long) row[1])
+                        .count(row[1] instanceof Number ? ((Number) row[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
     }

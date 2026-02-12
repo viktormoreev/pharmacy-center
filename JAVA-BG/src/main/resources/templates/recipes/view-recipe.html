@@ -98,11 +98,11 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <strong>Diagnosis:</strong>
-                        <p class="mt-2" th:if="${recipe.diagnosis != null && !recipe.diagnosis.isEmpty()}" 
-                           th:text="${recipe.diagnosis}">
+                        <p class="mt-2" th:if="${recipe.diagnosisSummary != null && !recipe.diagnosisSummary.isEmpty()}" 
+                           th:text="${recipe.diagnosisSummary}">
                             Patient diagnosis text...
                         </p>
-                        <p class="mt-2 text-muted fst-italic" th:if="${recipe.diagnosis == null || recipe.diagnosis.isEmpty()}">
+                        <p class="mt-2 text-muted fst-italic" th:if="${recipe.diagnosisSummary == null || recipe.diagnosisSummary.isEmpty()}">
                             No diagnosis provided
                         </p>
                     </div>

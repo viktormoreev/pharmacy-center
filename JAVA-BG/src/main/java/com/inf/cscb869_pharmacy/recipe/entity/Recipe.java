@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -43,9 +44,6 @@ public class Recipe extends BaseEntity {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private RecipeStatus status = RecipeStatus.ACTIVE;
-
-    @Column(length = 1000)
-    private String diagnosis;
 
     @Column(length = 2000)
     private String notes;
@@ -88,6 +86,20 @@ public class Recipe extends BaseEntity {
         return LocalDate.now().isAfter(expirationDate);
     }
 
+    @Transient
+    public String getDiagnosisSummary() {
+        if (diagnoses == null || diagnoses.isEmpty()) {
+            return null;
+        }
+        String summary = diagnoses.stream()
+                .map(Diagnosis::getName)
+                .filter(name -> name != null && !name.isBlank())
+                .map(String::trim)
+                .distinct()
+                .collect(Collectors.joining(", "));
+        return summary.isBlank() ? null : summary;
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +
@@ -96,7 +108,7 @@ public class Recipe extends BaseEntity {
                 ", status=" + status +
                 ", doctor=" + (doctor != null ? doctor.getName() : "null") +
                 ", customer=" + (customer != null ? customer.getName() : "null") +
-                ", diagnosis='" + diagnosis + '\'' +
+                ", diagnosis='" + getDiagnosisSummary() + '\'' +
                 ", sickLeave=" + sickLeave +
                 ", medicinesCount=" + recipeMedicines.size() +
                 '}';

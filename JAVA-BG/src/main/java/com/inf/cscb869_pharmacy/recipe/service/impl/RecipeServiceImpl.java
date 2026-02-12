@@ -46,7 +46,6 @@ public class RecipeServiceImpl implements RecipeService {
         existingRecipe.setDoctor(recipe.getDoctor());
         existingRecipe.setCustomer(recipe.getCustomer());
         existingRecipe.setStatus(recipe.getStatus());
-        existingRecipe.setDiagnosis(recipe.getDiagnosis());
         existingRecipe.setNotes(recipe.getNotes());
         existingRecipe.setExpirationDate(recipe.getExpirationDate());
 
@@ -149,7 +148,6 @@ public class RecipeServiceImpl implements RecipeService {
                 .doctorId(recipe.getDoctor() != null ? recipe.getDoctor().getId() : null)
                 .customerId(recipe.getCustomer() != null ? recipe.getCustomer().getId() : null)
                 .status(recipe.getStatus())
-                .diagnosis(recipe.getDiagnosis())
                 .notes(recipe.getNotes())
                 .expirationDate(recipe.getExpirationDate())
                 .build();

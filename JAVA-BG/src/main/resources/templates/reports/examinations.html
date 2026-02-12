@@ -79,7 +79,7 @@
                             <td th:text="${#temporals.format(exam.creationDate, 'dd-MM-yyyy')}">01-01-2026</td>
                             <td th:text="${exam.customer.name}">John Doe</td>
                             <td th:text="${exam.doctor.name}">Dr. Smith</td>
-                            <td th:text="${exam.diagnosis}">Flu</td>
+                            <td th:text="${exam.diagnosisSummary ?: '-'}">Flu</td>
                             <td>
                                 <span class="badge" 
                                       th:classappend="${exam.status == T(com.inf.cscb869_pharmacy.recipe.entity.RecipeStatus).ACTIVE ? 'bg-success' : 'bg-secondary'}"

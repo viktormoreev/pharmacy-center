@@ -47,11 +47,15 @@ class RecipeRepositoryReportQueriesDataJpaTest {
                 202L, "Bob", "2222222222", "bob@mail.com", true, 102L
         );
 
-        insertRecipe(301L, LocalDate.of(2026, 1, 10), 101L, 201L, "ACTIVE", "Flu", true);
-        insertRecipe(302L, LocalDate.of(2026, 1, 20), 101L, 202L, "ACTIVE", "Flu", true);
-        insertRecipe(303L, LocalDate.of(2026, 2, 5), 102L, 201L, "ACTIVE", "Covid", true);
-        insertRecipe(304L, LocalDate.of(2026, 2, 15), 102L, 202L, "ACTIVE", null, false);
-        insertRecipe(305L, LocalDate.of(2026, 2, 20), 102L, 202L, "ACTIVE", "", false);
+        insertRecipe(301L, LocalDate.of(2026, 1, 10), 101L, 201L, "ACTIVE", true);
+        insertRecipe(302L, LocalDate.of(2026, 1, 20), 101L, 202L, "ACTIVE", true);
+        insertRecipe(303L, LocalDate.of(2026, 2, 5), 102L, 201L, "ACTIVE", true);
+        insertRecipe(304L, LocalDate.of(2026, 2, 15), 102L, 202L, "ACTIVE", false);
+        insertRecipe(305L, LocalDate.of(2026, 2, 20), 102L, 202L, "ACTIVE", false);
+
+        insertDiagnosis(401L, 301L, "Flu");
+        insertDiagnosis(402L, 302L, "Flu");
+        insertDiagnosis(403L, 303L, "Covid");
     }
 
     @Test
@@ -99,11 +103,17 @@ class RecipeRepositoryReportQueriesDataJpaTest {
                               Long doctorId,
                               Long customerId,
                               String status,
-                              String diagnosis,
                               boolean sickLeave) {
         jdbcTemplate.update(
-                "insert into recipe (id, creation_date, doctor_id, customer_id, status, diagnosis, sick_leave) values (?,?,?,?,?,?,?)",
-                id, creationDate, doctorId, customerId, status, diagnosis, sickLeave
+                "insert into recipe (id, creation_date, doctor_id, customer_id, status, sick_leave) values (?,?,?,?,?,?)",
+                id, creationDate, doctorId, customerId, status, sickLeave
+        );
+    }
+
+    private void insertDiagnosis(Long id, Long recipeId, String name) {
+        jdbcTemplate.update(
+                "insert into diagnoses (id, recipe_id, name, diagnosis_date, is_primary) values (?,?,?,?,?)",
+                id, recipeId, name, LocalDate.of(2026, 1, 1), true
         );
     }
 }

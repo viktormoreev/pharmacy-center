@@ -154,13 +154,12 @@ WHERE egn = '7905154321';
 -- ========================================
 
 -- Recipe 1: John Smith - Hypertension (No sick leave)
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT 
     '2026-01-10',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1),
     'ACTIVE',
-    'Hypertension management',
     'Monitor blood pressure daily. Return in 30 days for follow-up.',
     '2026-07-10',
     false,
@@ -173,13 +172,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 2: Mary Johnson - Common cold with sick leave
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT 
     '2026-01-12',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
     'ACTIVE',
-    'Acute viral respiratory infection (Common cold)',
     'Rest and plenty of fluids. Complete full course of medication. Sick leave issued for 5 days.',
     '2026-02-12',
     true,
@@ -192,13 +190,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 3: Robert Davis - Arthritis (No sick leave)
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT 
     '2026-01-15',
     (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '5711309876' LIMIT 1),
     'ACTIVE',
-    'Osteoarthritis - knee joint',
     'Anti-inflammatory medication. Physical therapy recommended.',
     '2026-07-15',
     false,
@@ -211,13 +208,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 4: Emma Wilson - Skin allergy
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT 
     '2026-01-18',
     (SELECT id FROM doctor WHERE license_number = 'UIN-22222' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1),
     'ACTIVE',
-    'Allergic dermatitis',
     'Avoid latex products. Apply cream twice daily.',
     '2026-03-18',
     false,
@@ -230,13 +226,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 5: Peter Georgiev - Asthma exacerbation with sick leave
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT 
     '2026-01-20',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '8505156789' LIMIT 1),
     'ACTIVE',
-    'Acute asthma exacerbation',
     'Use inhaler as prescribed. Avoid triggers. Sick leave for 7 days.',
     '2026-04-20',
     true,
@@ -249,13 +244,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 6: John Smith - Follow-up examination (No sick leave)
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-02-05',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1),
     'ACTIVE',
-    'Hypertension follow-up',
     'Blood pressure improved. Continue treatment and low-salt diet.',
     '2026-08-05',
     false,
@@ -268,13 +262,12 @@ WHERE NOT EXISTS (
 );
 
 -- Recipe 7: Mary Johnson - Follow-up examination (No sick leave)
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-02-10',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
     'ACTIVE',
-    'Post-viral check-up',
     'Symptoms resolved. Return if fever or cough persists.',
     '2026-08-10',
     false,
@@ -439,13 +432,12 @@ SELECT
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '7601011122');
 
 -- Additional recipes across months and statuses
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-02-14',
     (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '8802145678' LIMIT 1),
     'FULFILLED',
-    'Type 2 diabetes follow-up',
     'Glycemic control improved, continue treatment.',
     '2026-08-14',
     false,
@@ -457,13 +449,12 @@ WHERE NOT EXISTS (
       AND r.creation_date = '2026-02-14'
 );
 
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-03-03',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9409073456' LIMIT 1),
     'ACTIVE',
-    'Seasonal allergic rhinitis',
     'Start antihistamine for 14 days.',
     '2026-05-03',
     false,
@@ -475,13 +466,12 @@ WHERE NOT EXISTS (
       AND r.creation_date = '2026-03-03'
 );
 
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-03-10',
     (SELECT id FROM doctor WHERE license_number = 'UIN-33333' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '7601011122' LIMIT 1),
     'EXPIRED',
-    'Migraine episode',
     'Symptomatic treatment, neurology follow-up if persistent.',
     '2026-04-10',
     true,
@@ -493,13 +483,12 @@ WHERE NOT EXISTS (
       AND r.creation_date = '2026-03-10'
 );
 
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-04-12',
     (SELECT id FROM doctor WHERE license_number = 'UIN-22222' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9603102345' LIMIT 1),
     'CANCELLED',
-    'Atopic dermatitis flare',
     'Patient did not start treatment, prescription cancelled.',
     '2026-06-12',
     false,
@@ -511,13 +500,12 @@ WHERE NOT EXISTS (
       AND r.creation_date = '2026-04-12'
 );
 
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-05-05',
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '7905154321' LIMIT 1),
     'FULFILLED',
-    'Hypertension control visit',
     'Medication adjusted. Return after 2 months.',
     '2026-11-05',
     false,
@@ -529,13 +517,12 @@ WHERE NOT EXISTS (
       AND r.creation_date = '2026-05-05'
 );
 
-INSERT INTO recipe (creation_date, doctor_id, customer_id, status, diagnosis, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
+INSERT INTO recipe (creation_date, doctor_id, customer_id, status, notes, expiration_date, sick_leave, sick_leave_days, sick_leave_start_date)
 SELECT
     '2026-06-01',
     (SELECT id FROM doctor WHERE license_number = 'UIN-11111' LIMIT 1),
     (SELECT id FROM customers WHERE egn = '9208227654' LIMIT 1),
     'ACTIVE',
-    'Acute bronchitis',
     'Antibiotic course and home rest.',
     '2026-07-01',
     true,

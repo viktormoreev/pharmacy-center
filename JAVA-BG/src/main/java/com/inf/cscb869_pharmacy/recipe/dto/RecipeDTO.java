@@ -33,8 +33,6 @@ public class RecipeDTO {
     @NotNull(message = "Status is required")
     private RecipeStatus status;
 
-    private String diagnosis;
-
     @Builder.Default
     private List<String> selectedDiagnoses = new ArrayList<>();
 

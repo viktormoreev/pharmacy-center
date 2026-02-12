@@ -32,7 +32,7 @@
                     <tr th:each="recipe : ${history}">
                         <td th:text="${#temporals.format(recipe.creationDate, 'dd-MM-yyyy')}">01-01-2026</td>
                         <td th:text="${recipe.doctor != null ? recipe.doctor.name : '-'}">Doctor</td>
-                        <td th:text="${recipe.diagnosis != null && !recipe.diagnosis.isBlank() ? recipe.diagnosis : '-'}">Diagnosis</td>
+                        <td th:text="${recipe.diagnosisSummary != null && !recipe.diagnosisSummary.isBlank() ? recipe.diagnosisSummary : '-'}">Diagnosis</td>
                         <td>
                             <span th:if="${recipe.recipeMedicines == null or recipe.recipeMedicines.isEmpty()}">-</span>
                             <ul class="mb-0 ps-3" th:if="${recipe.recipeMedicines != null and !recipe.recipeMedicines.isEmpty()}">

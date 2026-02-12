@@ -16,12 +16,16 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findAllByCreationDateAndDoctorNameContains(LocalDate dateCreation, String doctorName);
     List<Recipe> findAllByCreationDateAndDoctorNameStartsWith(LocalDate dateCreation, String doctorName);
 
-    List<Recipe> findByDiagnosisContainingIgnoreCase(String diagnosis);
+    @Query("SELECT DISTINCT r FROM Recipe r JOIN r.diagnoses d " +
+            "WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :diagnosis, '%'))")
+    List<Recipe> findByDiagnosisContainingIgnoreCase(@Param("diagnosis") String diagnosis);
 
-    @Query("SELECT COUNT(DISTINCT r.customer) FROM Recipe r WHERE LOWER(r.diagnosis) LIKE LOWER(CONCAT('%', :diagnosis, '%'))")
+    @Query("SELECT COUNT(DISTINCT r.customer) FROM Recipe r JOIN r.diagnoses d " +
+            "WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :diagnosis, '%'))")
     long countDistinctPatientsByDiagnosis(@Param("diagnosis") String diagnosis);
 
-    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.diagnosis IS NOT NULL AND TRIM(r.diagnosis) <> ''")
+    @Query("SELECT COUNT(DISTINCT r) FROM Recipe r JOIN r.diagnoses d " +
+            "WHERE d.name IS NOT NULL AND TRIM(d.name) <> ''")
     long countWithDiagnosis();
 
     List<Recipe> findByDoctorId(Long doctorId);
@@ -37,7 +41,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("SELECT r.doctor.name, COUNT(r) FROM Recipe r WHERE r.sickLeave = TRUE GROUP BY r.doctor.id, r.doctor.name ORDER BY COUNT(r) DESC")
     List<Object[]> countSickLeavesByDoctor();
 
-    @Query("SELECT r.diagnosis, COUNT(r) as cnt FROM Recipe r WHERE r.diagnosis IS NOT NULL AND r.diagnosis != '' GROUP BY r.diagnosis ORDER BY cnt DESC")
+    @Query("SELECT d.name, COUNT(d) as cnt FROM Diagnosis d " +
+            "WHERE d.name IS NOT NULL AND TRIM(d.name) <> '' GROUP BY d.name ORDER BY cnt DESC")
     List<Object[]> findMostCommonDiagnoses();
 
     List<Recipe> findByCreationDateBetween(LocalDate startDate, LocalDate endDate);
