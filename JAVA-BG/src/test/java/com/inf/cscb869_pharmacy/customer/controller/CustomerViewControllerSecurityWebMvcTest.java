@@ -41,9 +41,7 @@ class CustomerViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void customerCreateShouldAlsoBeAllowedForAdminWithDifferentPayload() throws Exception {
-        // Arrange: successful service behavior for a valid create request.
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
-        // Act + Assert: admin can submit create form and gets redirect.
         mockMvc.perform(post("/customers/create")
                         .with(csrf())
                         .param("name", "Alice")
@@ -56,9 +54,7 @@ class CustomerViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void customerCreateShouldBeAllowedForAdmin() throws Exception {
-        // Arrange: successful service behavior for a valid create request.
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
-        // Act + Assert: admin can submit create form and gets redirect.
         mockMvc.perform(post("/customers/create")
                         .with(csrf())
                         .param("name", "Bob")
@@ -71,7 +67,6 @@ class CustomerViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "DOCTOR")
     void customerCreateShouldBeForbiddenForDoctorRole() throws Exception {
-        // Doctors are read-only for customer management pages.
         mockMvc.perform(get("/customers/create"))
                 .andExpect(status().isForbidden());
     }

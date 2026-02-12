@@ -29,7 +29,6 @@ class RecipeRepositoryReportQueriesDataJpaTest {
 
     @BeforeEach
     void setUp() {
-        // Seed minimal doctors/patients/examinations for aggregate query tests.
         jdbcTemplate.update(
                 "insert into doctor (id, name, license_number, specialty, is_primary_doctor, email) values (?,?,?,?,?,?)",
                 101L, "Dr. One", "UIN-100", "General", true, "one@clinic.com"
@@ -57,10 +56,7 @@ class RecipeRepositoryReportQueriesDataJpaTest {
 
     @Test
     void countSickLeavesByMonthShouldGroupAndOrderDescending() {
-        // Act
         List<Object[]> rows = recipeRepository.countSickLeavesByMonth();
-
-        // Assert
         assertThat(rows).hasSize(2);
 
         assertThat(asInt(rows.get(0)[0])).isEqualTo(2026);
@@ -74,10 +70,7 @@ class RecipeRepositoryReportQueriesDataJpaTest {
 
     @Test
     void findMostCommonDiagnosesShouldExcludeNullAndBlankAndSortByCount() {
-        // Act
         List<Object[]> rows = recipeRepository.findMostCommonDiagnoses();
-
-        // Assert
         assertThat(rows).hasSize(2);
         assertThat(rows.get(0)[0]).isEqualTo("Flu");
         assertThat(asLong(rows.get(0)[1])).isEqualTo(2L);
@@ -87,11 +80,8 @@ class RecipeRepositoryReportQueriesDataJpaTest {
 
     @Test
     void countDistinctPatientsByDiagnosisShouldReturnUniqueCustomerCount() {
-        // Act
         long fluPatients = recipeRepository.countDistinctPatientsByDiagnosis("flu");
         long covidPatients = recipeRepository.countDistinctPatientsByDiagnosis("COVID");
-
-        // Assert
         assertThat(fluPatients).isEqualTo(2L);
         assertThat(covidPatients).isEqualTo(1L);
     }

@@ -1,6 +1,6 @@
 package com.inf.cscb869_pharmacy.recipe.service;
 
-import com.inf.cscb869_pharmacy.medicine.entity.Medicine;
+import com.inf.cscb869_pharmacy.recipe.dto.RecipeDTO;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
 
 import java.time.LocalDate;
@@ -11,9 +11,9 @@ public interface RecipeService {
 
     Recipe getRecipe(long id);
 
-    Recipe createRecipe(Recipe recipe);
+    RecipeDTO createRecipe(Recipe recipe);
 
-    Recipe updateRecipe(Recipe recipe, long id);
+    RecipeDTO updateRecipe(Recipe recipe, long id);
 
     void deleteRecipe(long id);
 

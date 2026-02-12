@@ -3,6 +3,7 @@ package com.inf.cscb869_pharmacy.recipe.service.impl;
 import com.inf.cscb869_pharmacy.customer.entity.Customer;
 import com.inf.cscb869_pharmacy.doctor.entity.Doctor;
 import com.inf.cscb869_pharmacy.medicine.entity.Medicine;
+import com.inf.cscb869_pharmacy.recipe.dto.RecipeDTO;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
 import com.inf.cscb869_pharmacy.recipe.entity.RecipeMedicine;
 import com.inf.cscb869_pharmacy.recipe.entity.RecipeStatus;
@@ -35,7 +36,6 @@ class RecipeServiceImplTest {
 
     @Test
     void createRecipeShouldSaveAndReturnRecipe() {
-        // Arrange
         Recipe input = Recipe.builder()
                 .creationDate(LocalDate.of(2026, 2, 10))
                 .doctor(doctor("Dr. A", "UIN-1"))
@@ -44,20 +44,20 @@ class RecipeServiceImplTest {
                 .diagnosis("Flu")
                 .notes("Rest")
                 .build();
+        input.setId(10L);
 
         when(recipeRepository.save(input)).thenReturn(input);
-
-        // Act
-        Recipe result = recipeService.createRecipe(input);
-
-        // Assert
-        assertThat(result).isSameAs(input);
+        RecipeDTO result = recipeService.createRecipe(input);
+        assertThat(result.getId()).isEqualTo(10L);
+        assertThat(result.getDoctorId()).isNotNull();
+        assertThat(result.getCustomerId()).isNotNull();
+        assertThat(result.getStatus()).isEqualTo(RecipeStatus.ACTIVE);
+        assertThat(result.getDiagnosis()).isEqualTo("Flu");
         verify(recipeRepository).save(input);
     }
 
     @Test
     void updateRecipeShouldUpdateFieldsAndReplaceMedicines() {
-        // Arrange: existing persisted recipe and incoming update payload.
         Recipe existing = Recipe.builder()
                 .creationDate(LocalDate.of(2026, 1, 1))
                 .doctor(doctor("Dr. Old", "UIN-OLD"))
@@ -68,6 +68,7 @@ class RecipeServiceImplTest {
                 .expirationDate(LocalDate.of(2026, 1, 15))
                 .recipeMedicines(new ArrayList<>())
                 .build();
+        existing.setId(42L);
         existing.getRecipeMedicines().add(recipeMedicine("Old med", "1x daily", 3));
 
         Recipe update = Recipe.builder()
@@ -86,12 +87,8 @@ class RecipeServiceImplTest {
 
         when(recipeRepository.findById(42L)).thenReturn(Optional.of(existing));
         when(recipeRepository.save(existing)).thenReturn(existing);
-
-        // Act
-        Recipe result = recipeService.updateRecipe(update, 42L);
-
-        // Assert: fields and medicine list are fully replaced.
-        assertThat(result).isSameAs(existing);
+        RecipeDTO result = recipeService.updateRecipe(update, 42L);
+        assertThat(result.getId()).isEqualTo(42L);
         assertThat(existing.getCreationDate()).isEqualTo(LocalDate.of(2026, 2, 10));
         assertThat(existing.getDoctor().getName()).isEqualTo("Dr. New");
         assertThat(existing.getCustomer().getName()).isEqualTo("New Patient");
@@ -105,6 +102,7 @@ class RecipeServiceImplTest {
                 .extracting(m -> m.getMedicine().getName())
                 .containsExactly("Paracetamol", "Vitamin C");
         assertThat(existing.getRecipeMedicines()).allSatisfy(m -> assertThat(m.getRecipe()).isSameAs(existing));
+        assertThat(result.getMedicines()).hasSize(2);
 
         ArgumentCaptor<Recipe> saveCaptor = ArgumentCaptor.forClass(Recipe.class);
         verify(recipeRepository).save(saveCaptor.capture());
@@ -113,34 +111,82 @@ class RecipeServiceImplTest {
 
     @Test
     void updateRecipeShouldThrowWhenRecipeNotFound() {
-        // Arrange
         when(recipeRepository.findById(999L)).thenReturn(Optional.empty());
-
-        // Assert
         assertThatThrownBy(() -> recipeService.updateRecipe(Recipe.builder().build(), 999L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Recipe with id=999 not found!");
     }
 
+    @Test
+    void createRecipeShouldRejectFutureCreationDate() {
+        Recipe input = Recipe.builder()
+                .creationDate(LocalDate.now().plusDays(1))
+                .doctor(doctor("Dr. A", "UIN-1"))
+                .customer(customer("Alice", "1234567890"))
+                .status(RecipeStatus.ACTIVE)
+                .build();
+
+        assertThatThrownBy(() -> recipeService.createRecipe(input))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Creation date cannot be in the future");
+    }
+
+    @Test
+    void updateRecipeShouldRejectInvalidMedicineRow() {
+        Recipe existing = Recipe.builder()
+                .creationDate(LocalDate.of(2026, 1, 1))
+                .doctor(doctor("Dr. Old", "UIN-OLD"))
+                .customer(customer("Old Patient", "1234567891"))
+                .status(RecipeStatus.ACTIVE)
+                .recipeMedicines(new ArrayList<>())
+                .build();
+
+        Recipe update = Recipe.builder()
+                .creationDate(LocalDate.of(2026, 2, 10))
+                .doctor(doctor("Dr. New", "UIN-NEW"))
+                .customer(customer("New Patient", "1234567892"))
+                .status(RecipeStatus.ACTIVE)
+                .recipeMedicines(List.of(
+                        RecipeMedicine.builder()
+                                .medicine(new Medicine())
+                                .dosage("1x daily")
+                                .durationDays(5)
+                                .quantity(0)
+                                .build()
+                ))
+                .build();
+
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(existing));
+
+        assertThatThrownBy(() -> recipeService.updateRecipe(update, 42L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Quantity must be at least 1");
+    }
+
     private static Doctor doctor(String name, String license) {
-        return Doctor.builder()
+        Doctor doctor = Doctor.builder()
                 .name(name)
                 .licenseNumber(license)
                 .specialty("General")
                 .isPrimaryDoctor(true)
                 .build();
+        doctor.setId((long) Math.abs(license.hashCode()));
+        return doctor;
     }
 
     private static Customer customer(String name, String egn) {
-        return Customer.builder()
+        Customer customer = Customer.builder()
                 .name(name)
                 .egn(egn)
                 .age(30)
                 .build();
+        customer.setId((long) Math.abs(egn.hashCode()));
+        return customer;
     }
 
     private static RecipeMedicine recipeMedicine(String medicineName, String dosage, int durationDays) {
         Medicine medicine = new Medicine();
+        medicine.setId((long) medicineName.hashCode());
         medicine.setName(medicineName);
         return RecipeMedicine.builder()
                 .medicine(medicine)

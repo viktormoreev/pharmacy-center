@@ -37,9 +37,7 @@ class DoctorViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void doctorCreateShouldAlsoBeAllowedForAdminWithDifferentPayload() throws Exception {
-        // Arrange: successful service behavior for a valid create request.
         when(doctorService.createDoctor(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
-        // Act + Assert: admin can submit doctor creation form.
         mockMvc.perform(post("/doctors/create")
                         .with(csrf())
                         .param("name", "Dr. New")
@@ -51,9 +49,7 @@ class DoctorViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void doctorCreateShouldBeAllowedForAdmin() throws Exception {
-        // Arrange: successful service behavior for a valid create request.
         when(doctorService.createDoctor(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
-        // Act + Assert: admin can submit doctor creation form.
         mockMvc.perform(post("/doctors/create")
                         .with(csrf())
                         .param("name", "Dr. New")
@@ -65,7 +61,6 @@ class DoctorViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "DOCTOR")
     void doctorCreateShouldBeForbiddenForDoctorRole() throws Exception {
-        // Doctors are not allowed to access doctor create form.
         mockMvc.perform(get("/doctors/create"))
                 .andExpect(status().isForbidden());
     }

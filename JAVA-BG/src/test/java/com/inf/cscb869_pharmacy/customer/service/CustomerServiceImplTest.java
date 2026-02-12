@@ -26,17 +26,12 @@ class CustomerServiceImplTest {
 
     @Test
     void createCustomerShouldSetActiveTrueByDefault() {
-        // Arrange: incoming customer without active flag.
         Customer customer = customer("Alice", "alice@pharmacy.com");
         customer.setActive(null);
 
         when(customerRepository.existsByEmail("alice@pharmacy.com")).thenReturn(false);
         when(customerRepository.save(customer)).thenReturn(customer);
-
-        // Act
         Customer result = customerService.createCustomer(customer);
-
-        // Assert: service normalizes flag and persists.
         assertThat(result).isSameAs(customer);
         assertThat(customer.getActive()).isTrue();
         verify(customerRepository).save(customer);
@@ -44,11 +39,8 @@ class CustomerServiceImplTest {
 
     @Test
     void createCustomerShouldThrowWhenEmailExists() {
-        // Arrange: duplicate email is detected before save.
         Customer customer = customer("Alice", "alice@pharmacy.com");
         when(customerRepository.existsByEmail("alice@pharmacy.com")).thenReturn(true);
-
-        // Assert: service blocks creation with explicit error.
         assertThatThrownBy(() -> customerService.createCustomer(customer))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Email already exists: alice@pharmacy.com");
@@ -56,7 +48,6 @@ class CustomerServiceImplTest {
 
     @Test
     void updateCustomerShouldUpdateFieldsAndPersist() {
-        // Arrange: existing customer plus incoming update payload.
         Customer existing = customer("Old Name", "old@pharmacy.com");
         existing.setId(7L);
         existing.setActive(true);
@@ -73,11 +64,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findById(7L)).thenReturn(Optional.of(existing));
         when(customerRepository.existsByEmail("new@pharmacy.com")).thenReturn(false);
         when(customerRepository.save(existing)).thenReturn(existing);
-
-        // Act
         Customer result = customerService.updateCustomer(7L, update);
-
-        // Assert: fields are copied and saved entity is returned.
         assertThat(result).isSameAs(existing);
         assertThat(existing.getName()).isEqualTo("New Name");
         assertThat(existing.getEmail()).isEqualTo("new@pharmacy.com");
@@ -93,7 +80,6 @@ class CustomerServiceImplTest {
 
     @Test
     void updateCustomerShouldThrowWhenChangingToExistingEmail() {
-        // Arrange: changing to already used email should fail.
         Customer existing = customer("Old Name", "old@pharmacy.com");
         existing.setId(8L);
 
@@ -101,8 +87,6 @@ class CustomerServiceImplTest {
 
         when(customerRepository.findById(8L)).thenReturn(Optional.of(existing));
         when(customerRepository.existsByEmail("taken@pharmacy.com")).thenReturn(true);
-
-        // Assert
         assertThatThrownBy(() -> customerService.updateCustomer(8L, update))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Email already exists: taken@pharmacy.com");
@@ -110,18 +94,13 @@ class CustomerServiceImplTest {
 
     @Test
     void deleteCustomerShouldSoftDeleteBySettingInactive() {
-        // Arrange: existing active customer.
         Customer existing = customer("Delete Me", "delete@pharmacy.com");
         existing.setId(9L);
         existing.setActive(true);
 
         when(customerRepository.findById(9L)).thenReturn(Optional.of(existing));
         when(customerRepository.save(existing)).thenReturn(existing);
-
-        // Act
         customerService.deleteCustomer(9L);
-
-        // Assert: soft delete keeps row and toggles active flag.
         assertThat(existing.getActive()).isFalse();
         verify(customerRepository).save(existing);
     }

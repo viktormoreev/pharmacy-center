@@ -41,7 +41,7 @@ public class SickLeaveServiceImpl implements SickLeaveService {
         if (sickLeave.getStatus() == null) {
             sickLeave.setStatus(SickLeaveStatus.ACTIVE);
         }
-        
+
         return sickLeaveRepository.save(sickLeave);
     }
 
@@ -49,13 +49,13 @@ public class SickLeaveServiceImpl implements SickLeaveService {
     public SickLeave updateSickLeave(Long id, SickLeave sickLeave) {
         log.info("Updating sick leave with ID: {}", id);
         SickLeave existing = getSickLeaveById(id);
-        
+
         existing.setStartDate(sickLeave.getStartDate());
         existing.setDurationDays(sickLeave.getDurationDays());
         existing.setReason(sickLeave.getReason());
         existing.setStatus(sickLeave.getStatus());
         existing.setNotes(sickLeave.getNotes());
-        
+
         return sickLeaveRepository.save(existing);
     }
 
@@ -154,19 +154,19 @@ public class SickLeaveServiceImpl implements SickLeaveService {
     public SickLeave extendSickLeave(Long id, Integer additionalDays, String reason) {
         log.info("Extending sick leave {} by {} days", id, additionalDays);
         SickLeave sickLeave = getSickLeaveById(id);
-        
+
         sickLeave.setDurationDays(sickLeave.getDurationDays() + additionalDays);
         sickLeave.setStatus(SickLeaveStatus.EXTENDED);
-        
-        String extendNote = String.format("Extended by %d days on %s. Reason: %s", 
+
+        String extendNote = String.format("Extended by %d days on %s. Reason: %s",
                 additionalDays, LocalDate.now(), reason);
-        
+
         if (sickLeave.getNotes() != null && !sickLeave.getNotes().isEmpty()) {
             sickLeave.setNotes(sickLeave.getNotes() + "\n" + extendNote);
         } else {
             sickLeave.setNotes(extendNote);
         }
-        
+
         return sickLeaveRepository.save(sickLeave);
     }
 
@@ -174,17 +174,17 @@ public class SickLeaveServiceImpl implements SickLeaveService {
     public SickLeave cancelSickLeave(Long id, String reason) {
         log.info("Cancelling sick leave {}", id);
         SickLeave sickLeave = getSickLeaveById(id);
-        
+
         sickLeave.setStatus(SickLeaveStatus.CANCELLED);
-        
+
         String cancelNote = String.format("Cancelled on %s. Reason: %s", LocalDate.now(), reason);
-        
+
         if (sickLeave.getNotes() != null && !sickLeave.getNotes().isEmpty()) {
             sickLeave.setNotes(sickLeave.getNotes() + "\n" + cancelNote);
         } else {
             sickLeave.setNotes(cancelNote);
         }
-        
+
         return sickLeaveRepository.save(sickLeave);
     }
 
@@ -192,9 +192,9 @@ public class SickLeaveServiceImpl implements SickLeaveService {
     public SickLeave completeSickLeave(Long id) {
         log.info("Marking sick leave {} as completed", id);
         SickLeave sickLeave = getSickLeaveById(id);
-        
+
         sickLeave.setStatus(SickLeaveStatus.COMPLETED);
-        
+
         return sickLeaveRepository.save(sickLeave);
     }
 
@@ -204,7 +204,7 @@ public class SickLeaveServiceImpl implements SickLeaveService {
         String datePrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uniquePart = UUID.randomUUID().toString().substring(0, 4).toUpperCase();
         String leaveNumber = "SL-" + datePrefix + "-" + uniquePart;
-        
+
         log.info("Generated sick leave number: {}", leaveNumber);
         return leaveNumber;
     }

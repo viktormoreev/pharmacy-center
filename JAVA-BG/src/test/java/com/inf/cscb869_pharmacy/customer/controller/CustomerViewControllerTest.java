@@ -41,30 +41,20 @@ class CustomerViewControllerTest {
 
     @Test
     void listCustomersShouldUseActiveCustomersWhenSearchMissing() {
-        // Arrange: no search term should use active customers query.
         List<Customer> active = List.of(customer("Alice", "alice@pharmacy.com"));
         when(customerService.getActiveCustomers()).thenReturn(active);
-
-        // Act: call controller method directly.
         ExtendedModelMap model = new ExtendedModelMap();
         String view = customerViewController.listCustomers(null, model, null);
-
-        // Assert: expected template and model payload.
         assertThat(view).isEqualTo("customers/customers");
         assertThat(model.getAttribute("customers")).isEqualTo(active);
     }
 
     @Test
     void listCustomersShouldUseSearchWhenProvided() {
-        // Arrange: search term should route through search service method.
         List<Customer> found = List.of(customer("Bob", "bob@pharmacy.com"));
         when(customerService.searchByName("bo")).thenReturn(found);
-
-        // Act
         ExtendedModelMap model = new ExtendedModelMap();
         String view = customerViewController.listCustomers("bo", model, null);
-
-        // Assert
         assertThat(view).isEqualTo("customers/customers");
         assertThat(model.getAttribute("customers")).isEqualTo(found);
         assertThat(model.getAttribute("search")).isEqualTo("bo");
@@ -125,23 +115,17 @@ class CustomerViewControllerTest {
 
     @Test
     void createCustomerShouldReturnFormOnValidationErrors() {
-        // Arrange: binding result contains validation error.
         CustomerDTO dto = CustomerDTO.builder().build();
         BindingResult result = new BeanPropertyBindingResult(dto, "customerDTO");
         result.rejectValue("name", "required", "Name required");
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
-
-        // Act
         String view = customerViewController.createCustomer(dto, result, redirect);
-
-        // Assert: stay on form and do not call service.
         assertThat(view).isEqualTo("customers/create-customer");
         verifyNoInteractions(customerService);
     }
 
     @Test
     void createCustomerShouldPersistAndRedirectOnSuccess() {
-        // Arrange: valid DTO and successful service save.
         CustomerDTO dto = CustomerDTO.builder()
                 .name("Alice")
                 .age(30)
@@ -152,11 +136,7 @@ class CustomerViewControllerTest {
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any(Customer.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
-
-        // Act
         String view = customerViewController.createCustomer(dto, result, redirect);
-
-        // Assert: redirect + flash message + mapped entity fields.
         assertThat(view).isEqualTo("redirect:/customers");
         assertThat(redirect.getFlashAttributes().get("successMessage")).isEqualTo("Customer created successfully!");
 
@@ -168,7 +148,6 @@ class CustomerViewControllerTest {
 
     @Test
     void createCustomerShouldReturnFormAndAddEmailErrorWhenServiceRejects() {
-        // Arrange: service rejects duplicate email.
         CustomerDTO dto = CustomerDTO.builder()
                 .name("Alice")
                 .age(30)
@@ -179,11 +158,7 @@ class CustomerViewControllerTest {
 
         when(customerService.createCustomer(org.mockito.ArgumentMatchers.any(Customer.class)))
                 .thenThrow(new IllegalArgumentException("Email already exists: dup@pharmacy.com"));
-
-        // Act
         String view = customerViewController.createCustomer(dto, result, redirect);
-
-        // Assert: controller maps service error back to form field error.
         assertThat(view).isEqualTo("customers/create-customer");
         assertThat(result.hasFieldErrors("email")).isTrue();
     }

@@ -1,5 +1,6 @@
 package com.inf.cscb869_pharmacy.recipe.controller;
 
+import com.inf.cscb869_pharmacy.recipe.dto.RecipeDTO;
 import com.inf.cscb869_pharmacy.recipe.entity.Recipe;
 import com.inf.cscb869_pharmacy.recipe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,12 @@ public class RecipeApiController {
     }
 
     @PostMapping
-    public Recipe createRecipe(@RequestBody Recipe recipe) {
+    public RecipeDTO createRecipe(@RequestBody Recipe recipe) {
         return this.recipeService.createRecipe(recipe);
     }
 
     @PutMapping("/{id}")
-    public Recipe updateRecipe(@RequestBody Recipe recipe, @PathVariable long id) {
+    public RecipeDTO updateRecipe(@RequestBody Recipe recipe, @PathVariable long id) {
         return this.recipeService.updateRecipe(recipe, id);
     }
 
@@ -51,5 +52,4 @@ public class RecipeApiController {
         return this.recipeService.getAllRecipesByCreationDateAndDoctorNameContains(creationDate, doctorName);
     }
 }
-
 

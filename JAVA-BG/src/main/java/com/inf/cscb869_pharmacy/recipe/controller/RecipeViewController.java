@@ -173,7 +173,7 @@ public class RecipeViewController {
 
         try {
             Recipe recipe = convertToEntity(recipeDTO);
-            Recipe savedRecipe = recipeService.createRecipe(recipe);
+            RecipeDTO savedRecipe = recipeService.createRecipe(recipe);
             redirectAttributes.addFlashAttribute("success", "Recipe created successfully!");
             return "redirect:/recipes/" + savedRecipe.getId();
         } catch (Exception e) {
@@ -274,9 +274,9 @@ public class RecipeViewController {
 
         try {
             Recipe recipe = convertToEntity(recipeDTO);
-            recipeService.updateRecipe(recipe, id);
+            RecipeDTO updatedRecipe = recipeService.updateRecipe(recipe, id);
             redirectAttributes.addFlashAttribute("success", "Recipe updated successfully!");
-            return "redirect:/recipes/" + id;
+            return "redirect:/recipes/" + updatedRecipe.getId();
         } catch (Exception e) {
             model.addAttribute("error", "Error updating recipe: " + e.getMessage());
             model.addAttribute("doctors", doctorService.getDoctors());
