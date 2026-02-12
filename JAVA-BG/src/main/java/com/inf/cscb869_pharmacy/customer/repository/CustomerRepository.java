@@ -35,11 +35,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<Customer> findByActiveTrue();
 
     /**
-     * Find customers by age range
-     */
-    List<Customer> findByAgeBetween(Integer minAge, Integer maxAge);
-
-    /**
      * Find customers with specific allergies
      */
     @Query("SELECT c FROM Customer c WHERE LOWER(c.allergies) LIKE LOWER(CONCAT('%', :allergy, '%'))")

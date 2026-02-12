@@ -178,7 +178,6 @@ class RecipeServiceImplTest {
         Customer customer = Customer.builder()
                 .name(name)
                 .egn(egn)
-                .age(30)
                 .build();
         customer.setId((long) Math.abs(egn.hashCode()));
         return customer;

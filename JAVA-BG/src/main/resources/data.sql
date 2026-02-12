@@ -63,12 +63,11 @@ WHERE license_number = 'UIN-12345';
 -- ========================================
 -- CUSTOMERS/PATIENTS (with new fields: EGN, primary_doctor_id, insurance_paid_until)
 -- ========================================
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT 
     'John Smith', 
-    '7905154321', 
-    45, 
-    'john.smith@email.com', 
+    '7905154321',
+    'john.smith@email.com',
     '+359888111222', 
     '123 Main St, Sofia', 
     '1979-05-15', 
@@ -80,12 +79,11 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '7905154321');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT 
     'Mary Johnson', 
-    '9208227654', 
-    32, 
-    'mary.johnson@email.com', 
+    '9208227654',
+    'mary.johnson@email.com',
     '+359888222333', 
     '456 Oak Ave, Plovdiv', 
     '1992-08-22', 
@@ -97,12 +95,11 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '9208227654');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT 
     'Robert Davis', 
-    '5711309876', 
-    67, 
-    'robert.davis@email.com', 
+    '5711309876',
+    'robert.davis@email.com',
     '+359888333444', 
     '789 Pine Rd, Varna', 
     '1957-11-30', 
@@ -114,12 +111,11 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '5711309876');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT 
     'Emma Wilson', 
-    '9603102345', 
-    28, 
-    'emma.wilson@email.com', 
+    '9603102345',
+    'emma.wilson@email.com',
     '+359888444555', 
     '321 Elm St, Burgas', 
     '1996-03-10', 
@@ -131,12 +127,11 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-11111' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '9603102345');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT 
     'Peter Georgiev', 
-    '8505156789', 
-    39, 
-    'p.georgiev@email.com', 
+    '8505156789',
+    'p.georgiev@email.com',
     '+359888555666', 
     '555 River St, Ruse', 
     '1985-05-15', 
@@ -395,11 +390,10 @@ SELECT 'Omeprazole', 16, false
 WHERE NOT EXISTS (SELECT 1 FROM medicine WHERE name = 'Omeprazole');
 
 -- Additional customers
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT
     'Nikolai Petrov',
     '8802145678',
-    37,
     'n.petrov@email.com',
     '+359888666777',
     '12 Vitosha Blvd, Sofia',
@@ -412,11 +406,10 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-54321' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '8802145678');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT
     'Silvia Todorova',
     '9409073456',
-    31,
     'silvia.todorova@email.com',
     '+359888777888',
     '27 Rakovski St, Plovdiv',
@@ -429,11 +422,10 @@ SELECT
     (SELECT id FROM doctor WHERE license_number = 'UIN-12345' LIMIT 1)
 WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '9409073456');
 
-INSERT INTO customers (name, egn, age, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
+INSERT INTO customers (name, egn, email, phone, address, date_of_birth, allergies, medical_history, insurance_number, active, insurance_paid_until, primary_doctor_id)
 SELECT
     'Georgi Ivanov',
     '7601011122',
-    50,
     'georgi.ivanov@email.com',
     '+359888999000',
     '8 Tsar Simeon, Varna',

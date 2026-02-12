@@ -60,7 +60,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         // Update fields
         existingCustomer.setName(customer.getName());
-        existingCustomer.setAge(customer.getAge());
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhone(customer.getPhone());
         existingCustomer.setAddress(customer.getAddress());
@@ -105,7 +104,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(readOnly = true)
     public List<Customer> findByAgeRange(Integer minAge, Integer maxAge) {
-        return customerRepository.findByAgeBetween(minAge, maxAge);
+        return customerRepository.findAll().stream()
+                .filter(c -> c.getAge() != null)
+                .filter(c -> c.getAge() >= minAge && c.getAge() <= maxAge)
+                .toList();
     }
 
     @Override

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +30,6 @@ public class Customer extends BaseEntity {
     @Pattern(regexp = "^[0-9]{10}$", message = "EGN must be exactly 10 digits")
     @Column(unique = true, nullable = false, length = 10)
     private String egn;
-
-    @NotNull(message = "Age is required")
-    @Min(value = 0, message = "Age must be positive")
-    @Max(value = 150, message = "Age must be realistic")
-    @Column(nullable = false)
-    private Integer age;
 
     @Email(message = "Email should be valid")
     @Column(unique = true, length = 100)
@@ -83,13 +78,21 @@ public class Customer extends BaseEntity {
         return !insurancePaidUntil.isBefore(today);
     }
 
+    @Transient
+    public Integer getAge() {
+        if (dateOfBirth == null) {
+            return null;
+        }
+        return Math.max(0, Period.between(dateOfBirth, LocalDate.now()).getYears());
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "id=" + getId() +
                 ", name='" + name + '\'' +
                 ", egn='" + egn + '\'' +
-                ", age=" + age +
+                ", age=" + getAge() +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", active=" + active +

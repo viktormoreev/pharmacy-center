@@ -37,8 +37,8 @@ class ReportServiceImplTest {
 
     @Test
     void getPatientsByDiagnosisShouldReturnDistinctCustomers() {
-        Customer first = Customer.builder().name("Alice").egn("1234567890").age(30).build();
-        Customer second = Customer.builder().name("Bob").egn("1234567891").age(28).build();
+        Customer first = Customer.builder().name("Alice").egn("1234567890").build();
+        Customer second = Customer.builder().name("Bob").egn("1234567891").build();
 
         Recipe r1 = Recipe.builder().customer(first).build();
         Recipe r2 = Recipe.builder().customer(first).build();

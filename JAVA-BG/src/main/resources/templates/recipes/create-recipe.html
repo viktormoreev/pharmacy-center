@@ -226,7 +226,7 @@
 </div>
 
 <script th:inline="javascript">
-    let medicineCount = /*[[${recipeDTO.medicines.size()}]]*/ 1;
+    let medicineCount = /*[[${recipeDTO.medicines.size()}]]*/ 0;
     
     // Store medicine options as JavaScript array
     const medicineOptions = /*[[${medicines}]]*/ [];
@@ -282,13 +282,8 @@
     }
 
     function removeMedicine(button) {
-        const medicineRows = document.querySelectorAll('.medicine-row');
-        if (medicineRows.length > 1) {
-            button.closest('.medicine-row').remove();
-            updateMedicineNumbers();
-        } else {
-            alert('At least one medicine must be prescribed!');
-        }
+        button.closest('.medicine-row').remove();
+        updateMedicineNumbers();
     }
 
     function updateMedicineNumbers() {

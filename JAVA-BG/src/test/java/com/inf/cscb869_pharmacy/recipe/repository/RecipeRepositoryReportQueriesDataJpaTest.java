@@ -39,12 +39,12 @@ class RecipeRepositoryReportQueriesDataJpaTest {
         );
 
         jdbcTemplate.update(
-                "insert into customers (id, name, egn, age, email, active, primary_doctor_id) values (?,?,?,?,?,?,?)",
-                201L, "Alice", "1111111111", 30, "alice@mail.com", true, 101L
+                "insert into customers (id, name, egn, email, active, primary_doctor_id) values (?,?,?,?,?,?)",
+                201L, "Alice", "1111111111", "alice@mail.com", true, 101L
         );
         jdbcTemplate.update(
-                "insert into customers (id, name, egn, age, email, active, primary_doctor_id) values (?,?,?,?,?,?,?)",
-                202L, "Bob", "2222222222", 35, "bob@mail.com", true, 102L
+                "insert into customers (id, name, egn, email, active, primary_doctor_id) values (?,?,?,?,?,?)",
+                202L, "Bob", "2222222222", "bob@mail.com", true, 102L
         );
 
         insertRecipe(301L, LocalDate.of(2026, 1, 10), 101L, 201L, "ACTIVE", "Flu", true);

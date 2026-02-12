@@ -45,7 +45,6 @@ class CustomerViewControllerSecurityWebMvcTest {
         mockMvc.perform(post("/customers/create")
                         .with(csrf())
                         .param("name", "Alice")
-                        .param("age", "30")
                         .param("email", "alice@pharmacy.com")
                         .param("phone", "+359888111222"))
                 .andExpect(status().is3xxRedirection());
@@ -58,7 +57,6 @@ class CustomerViewControllerSecurityWebMvcTest {
         mockMvc.perform(post("/customers/create")
                         .with(csrf())
                         .param("name", "Bob")
-                        .param("age", "31")
                         .param("email", "bob@pharmacy.com")
                         .param("phone", "+359888111223"))
                 .andExpect(status().is3xxRedirection());

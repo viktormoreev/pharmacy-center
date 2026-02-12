@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +54,7 @@ class CustomerServiceImplTest {
         existing.setActive(true);
 
         Customer update = customer("New Name", "new@pharmacy.com");
-        update.setAge(45);
+        update.setDateOfBirth(LocalDate.now().minusYears(45));
         update.setPhone("+359888111222");
         update.setAddress("Sofia");
         update.setAllergies("Penicillin");
@@ -123,7 +124,7 @@ class CustomerServiceImplTest {
         return Customer.builder()
                 .name(name)
                 .egn("1234567890")
-                .age(30)
+                .dateOfBirth(LocalDate.now().minusYears(30))
                 .email(email)
                 .active(true)
                 .build();

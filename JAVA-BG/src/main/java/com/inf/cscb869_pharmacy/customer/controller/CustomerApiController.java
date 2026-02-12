@@ -110,7 +110,6 @@ public class CustomerApiController {
         return CustomerDTO.builder()
                 .id(customer.getId())
                 .name(customer.getName())
-                .age(customer.getAge())
                 .email(customer.getEmail())
                 .phone(customer.getPhone())
                 .address(customer.getAddress())
@@ -125,7 +124,6 @@ public class CustomerApiController {
     private Customer convertToEntity(CustomerDTO dto) {
         return Customer.builder()
                 .name(dto.getName())
-                .age(dto.getAge())
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .address(dto.getAddress())

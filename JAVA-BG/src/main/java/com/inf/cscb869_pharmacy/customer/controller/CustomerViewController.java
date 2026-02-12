@@ -158,7 +158,6 @@ public class CustomerViewController {
     private Customer convertToEntity(CustomerDTO dto) {
         return Customer.builder()
                 .name(dto.getName())
-                .age(dto.getAge())
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .address(dto.getAddress())
@@ -173,7 +172,6 @@ public class CustomerViewController {
     private CustomerDTO convertToDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
         dto.setName(customer.getName());
-        dto.setAge(customer.getAge());
         dto.setEmail(customer.getEmail());
         dto.setPhone(customer.getPhone());
         dto.setAddress(customer.getAddress());

@@ -128,7 +128,6 @@ class CustomerViewControllerTest {
     void createCustomerShouldPersistAndRedirectOnSuccess() {
         CustomerDTO dto = CustomerDTO.builder()
                 .name("Alice")
-                .age(30)
                 .email("alice@pharmacy.com")
                 .phone("+359888111222")
                 .build();
@@ -150,7 +149,6 @@ class CustomerViewControllerTest {
     void createCustomerShouldReturnFormAndAddEmailErrorWhenServiceRejects() {
         CustomerDTO dto = CustomerDTO.builder()
                 .name("Alice")
-                .age(30)
                 .email("dup@pharmacy.com")
                 .build();
         BindingResult result = new BeanPropertyBindingResult(dto, "customerDTO");
@@ -167,7 +165,6 @@ class CustomerViewControllerTest {
         return Customer.builder()
                 .name(name)
                 .egn("1234567890")
-                .age(30)
                 .email(email)
                 .active(true)
                 .build();

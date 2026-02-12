@@ -34,23 +34,6 @@
                                 </div>
                             </div>
 
-                            <!-- Age -->
-                            <div class="col-md-6 mb-3">
-                                <label for="age" class="form-label">Age <span class="text-danger">*</span></label>
-                                <input type="number" 
-                                       class="form-control" 
-                                       th:class="${#fields.hasErrors('age')} ? 'form-control is-invalid' : 'form-control'"
-                                       id="age" 
-                                       th:field="*{age}" 
-                                       min="0" 
-                                       max="150"
-                                       placeholder="Enter age"
-                                       required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">
-                                    Age error
-                                </div>
-                            </div>
-
                             <!-- Email -->
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email <span class="text-danger">*</span></label>

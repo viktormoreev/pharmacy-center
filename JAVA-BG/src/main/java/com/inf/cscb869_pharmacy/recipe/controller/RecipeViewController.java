@@ -112,10 +112,7 @@ public class RecipeViewController {
                 .status(RecipeStatus.ACTIVE)
                 .medicines(new ArrayList<>())
                 .build();
-        
-        // Add one empty medicine line by default
-        recipeDTO.addMedicine(RecipeMedicineDTO.builder().quantity(1).durationDays(7).build());
-        
+
         // Check if user is a DOCTOR - if so, auto-assign them
         String userEmail = getUserEmail(authentication);
         var doctor = findDoctorByEmail(userEmail);
