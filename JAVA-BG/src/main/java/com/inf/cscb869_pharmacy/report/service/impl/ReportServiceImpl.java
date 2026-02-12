@@ -157,14 +157,14 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<Customer> getCustomersWithValidInsurance() {
         log.info("Fetching customers with valid insurance");
-        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
-        return customerRepository.findWithValidInsurance(sixMonthsAgo);
+        LocalDate today = LocalDate.now();
+        return customerRepository.findWithValidInsurance(today);
     }
 
     @Override
     public List<Customer> getCustomersWithoutValidInsurance() {
         log.info("Fetching customers without valid insurance");
-        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
-        return customerRepository.findWithoutValidInsurance(sixMonthsAgo);
+        LocalDate today = LocalDate.now();
+        return customerRepository.findWithoutValidInsurance(today);
     }
 }

@@ -20,30 +20,21 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public List<MedicineDTO> getMedicines() {
-
-        return
-                this.mapperUtil
-                        .mapList(
-                                this.medicineRepository.findAll(), MedicineDTO.class);
+        return this.mapperUtil
+                .mapList(this.medicineRepository.findAll(), MedicineDTO.class);
     }
 
     @Override
     public MedicineDTO getMedicine(long id) {
-        return
-                this.mapperUtil.getModelMapper().map(
-                        this.medicineRepository
-                                .findById(id).orElseThrow(()
-                                        -> new RuntimeException("Medicine with id=" + id + " not found!")),
-                        MedicineDTO.class);
+        return this.mapperUtil
+                .getModelMapper()
+                .map(this.medicineRepository.findById(id).orElseThrow(() -> new RuntimeException("Medicine with id=" + id + " not found!")), MedicineDTO.class);
     }
 
     @Override
     public CreateMedicineDTO createMedicine(CreateMedicineDTO medicine) {
         return mapperUtil.getModelMapper()
-                .map(this.medicineRepository
-                        .save(mapperUtil.getModelMapper()
-                                .map(medicine, Medicine.class)), CreateMedicineDTO.class);
-
+                .map(this.medicineRepository.save(mapperUtil.getModelMapper().map(medicine, Medicine.class)), CreateMedicineDTO.class);
     }
 
     @Override

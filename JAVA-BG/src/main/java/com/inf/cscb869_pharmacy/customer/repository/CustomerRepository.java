@@ -56,16 +56,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsByEmail(String email);
 
     /**
-     * Find customers with valid insurance (paid within last 6 months)
+     * Find customers with valid insurance as of a reference date.
      */
-    @Query("SELECT c FROM Customer c WHERE c.insurancePaidUntil >= :sixMonthsAgo")
-    List<Customer> findWithValidInsurance(@Param("sixMonthsAgo") LocalDate sixMonthsAgo);
+    @Query("SELECT c FROM Customer c WHERE c.insurancePaidUntil >= :referenceDate")
+    List<Customer> findWithValidInsurance(@Param("referenceDate") LocalDate referenceDate);
 
     /**
-     * Find customers without valid insurance
+     * Find customers without valid insurance as of a reference date.
      */
-    @Query("SELECT c FROM Customer c WHERE c.insurancePaidUntil < :sixMonthsAgo OR c.insurancePaidUntil IS NULL")
-    List<Customer> findWithoutValidInsurance(@Param("sixMonthsAgo") LocalDate sixMonthsAgo);
+    @Query("SELECT c FROM Customer c WHERE c.insurancePaidUntil < :referenceDate OR c.insurancePaidUntil IS NULL")
+    List<Customer> findWithoutValidInsurance(@Param("referenceDate") LocalDate referenceDate);
 
     /**
      * Find all patients by primary doctor

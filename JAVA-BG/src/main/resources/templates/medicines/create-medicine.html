@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments :: head"></head>
+<head th:replace="~{fragments :: head}"></head>
 <body>
-    <header th:replace="fragments :: header"></header>
-<nav th:replace="fragments :: navbar"></nav>
+    <header th:replace="~{fragments :: header}"></header>
+<nav th:replace="~{fragments :: navigation}"></nav>
     
     <div class="main-container">
         <div class="container">
@@ -41,9 +41,9 @@
                                        placeholder="e.g., 18" 
                                        id="ageAppropriateness"
                                        min="0"
-                                       max="100"
+                                       max="18"
                                        required>
-                                <small class="form-text text-muted">Minimum age required to use this medicine</small>
+                                <small class="form-text text-muted">Allowed range: 0 to 18 years</small>
                                 <span class="text-danger" th:if="${#fields.hasErrors('ageAppropriateness')}" th:errors="*{ageAppropriateness}">Age Error</span>
                             </div>
                             

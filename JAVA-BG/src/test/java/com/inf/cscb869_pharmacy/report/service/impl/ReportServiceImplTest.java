@@ -74,7 +74,7 @@ class ReportServiceImplTest {
     }
 
     @Test
-    void getCustomersWithValidInsuranceShouldUseSixMonthsBoundary() {
+    void getCustomersWithValidInsuranceShouldUseTodayBoundary() {
         when(customerRepository.findWithValidInsurance(org.mockito.ArgumentMatchers.any(LocalDate.class)))
                 .thenReturn(List.of());
 
@@ -83,6 +83,19 @@ class ReportServiceImplTest {
         ArgumentCaptor<LocalDate> captor = ArgumentCaptor.forClass(LocalDate.class);
         verify(customerRepository).findWithValidInsurance(captor.capture());
 
-        assertThat(captor.getValue()).isEqualTo(LocalDate.now().minusMonths(6));
+        assertThat(captor.getValue()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    void getCustomersWithoutValidInsuranceShouldUseTodayBoundary() {
+        when(customerRepository.findWithoutValidInsurance(org.mockito.ArgumentMatchers.any(LocalDate.class)))
+                .thenReturn(List.of());
+
+        reportService.getCustomersWithoutValidInsurance();
+
+        ArgumentCaptor<LocalDate> captor = ArgumentCaptor.forClass(LocalDate.class);
+        verify(customerRepository).findWithoutValidInsurance(captor.capture());
+
+        assertThat(captor.getValue()).isEqualTo(LocalDate.now());
     }
 }

@@ -91,7 +91,7 @@
                     <!-- User info for authenticated users -->
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <span class="nav-link">
-                            👤 <span th:text="${#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['name'] != null ? #authentication.principal.attributes['name'] : (#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['preferred_username'] != null ? #authentication.principal.attributes['preferred_username'] : (#authentication.principal != null and #authentication.principal.attributes != null and #authentication.principal.attributes['email'] != null ? #authentication.principal.attributes['email'] : #authentication.name))}">User</span>
+                            👤 <span th:text="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ? (#authentication.principal.attributes['name'] != null ? #authentication.principal.attributes['name'] : (#authentication.principal.attributes['preferred_username'] != null ? #authentication.principal.attributes['preferred_username'] : (#authentication.principal.attributes['email'] != null ? #authentication.principal.attributes['email'] : #authentication.name))) : #authentication.name}">User</span>
                         </span>
                     </li>
                     
