@@ -150,7 +150,8 @@ WHERE NOT EXISTS (SELECT 1 FROM customers WHERE egn = '8505156789');
 
 -- Keycloak account mapping for role CUSTOMER (for demo/testing login)
 UPDATE customers
-SET email = 'customer@pharmacy.com'
+SET email = 'customer@pharmacy.com',
+    name = 'Bob Customer'
 WHERE egn = '7905154321';
 
 -- ========================================

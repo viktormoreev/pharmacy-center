@@ -1,6 +1,7 @@
 package com.inf.cscb869_pharmacy.recipe.controller;
 
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
+import com.inf.cscb869_pharmacy.diagnosis.service.DiagnosisService;
 import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import com.inf.cscb869_pharmacy.medicine.entity.Medicine;
 import com.inf.cscb869_pharmacy.medicine.repository.MedicineRepository;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +38,7 @@ public class RecipeViewController {
     private final RecipeService recipeService;
     private final DoctorService doctorService;
     private final CustomerService customerService;
+    private final DiagnosisService diagnosisService;
     private final MedicineService medicineService;
     private final MedicineRepository medicineRepository;
 
@@ -53,10 +57,13 @@ public class RecipeViewController {
             model.addAttribute("doctorMappingMissing", true);
             model.addAttribute("error", "Doctor account is not linked to a doctor record in the database. Please contact admin.");
             model.addAttribute("isDoctorUser", true);
-        } else if (doctor != null) {
+        } else if (isDoctorUser(authentication) && doctor != null) {
             // Filter to only show this doctor's prescriptions
             recipes = recipes.stream()
-                    .filter(r -> r.getDoctor().getId().equals(doctor.getId()))
+                    .filter(r -> r.getDoctor() != null
+                            && r.getDoctor().getId() != null
+                            && doctor.getId() != null
+                            && r.getDoctor().getId().equals(doctor.getId()))
                     .collect(Collectors.toList());
             model.addAttribute("isDoctorUser", true);
         } else {
@@ -127,6 +134,7 @@ public class RecipeViewController {
         model.addAttribute("recipeDTO", recipeDTO);
         model.addAttribute("doctors", doctorService.getDoctors());
         model.addAttribute("customers", customerService.getActiveCustomers());
+        model.addAttribute("diagnosisOptions", getDiagnosisOptions());
         model.addAttribute("medicines", medicineService.getMedicines());
         model.addAttribute("statuses", RecipeStatus.values());
         
@@ -157,6 +165,7 @@ public class RecipeViewController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
+            model.addAttribute("diagnosisOptions", getDiagnosisOptions());
             model.addAttribute("medicines", medicineService.getMedicines());
             model.addAttribute("statuses", RecipeStatus.values());
             return "recipes/create-recipe";
@@ -171,6 +180,7 @@ public class RecipeViewController {
             model.addAttribute("error", "Error creating recipe: " + e.getMessage());
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
+            model.addAttribute("diagnosisOptions", getDiagnosisOptions());
             model.addAttribute("medicines", medicineService.getMedicines());
             model.addAttribute("statuses", RecipeStatus.values());
             return "recipes/create-recipe";
@@ -209,6 +219,7 @@ public class RecipeViewController {
             model.addAttribute("recipeDTO", recipeDTO);
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
+            model.addAttribute("diagnosisOptions", getDiagnosisOptions());
             model.addAttribute("medicines", medicineService.getMedicines());
             model.addAttribute("statuses", RecipeStatus.values());
             
@@ -255,6 +266,7 @@ public class RecipeViewController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
+            model.addAttribute("diagnosisOptions", getDiagnosisOptions());
             model.addAttribute("medicines", medicineService.getMedicines());
             model.addAttribute("statuses", RecipeStatus.values());
             return "recipes/edit-recipe";
@@ -269,6 +281,7 @@ public class RecipeViewController {
             model.addAttribute("error", "Error updating recipe: " + e.getMessage());
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
+            model.addAttribute("diagnosisOptions", getDiagnosisOptions());
             model.addAttribute("medicines", medicineService.getMedicines());
             model.addAttribute("statuses", RecipeStatus.values());
             return "recipes/edit-recipe";
@@ -414,5 +427,25 @@ public class RecipeViewController {
         }
         return authentication.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_DOCTOR".equals(a.getAuthority()));
+    }
+
+    private List<String> getDiagnosisOptions() {
+        LinkedHashSet<String> options = new LinkedHashSet<>();
+
+        diagnosisService.getAllDiagnoses().stream()
+                .map(d -> d.getName())
+                .filter(name -> name != null && !name.isBlank())
+                .map(String::trim)
+                .forEach(options::add);
+
+        recipeService.getRecipes().stream()
+                .map(Recipe::getDiagnosis)
+                .filter(name -> name != null && !name.isBlank())
+                .map(String::trim)
+                .forEach(options::add);
+
+        return options.stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
     }
 }

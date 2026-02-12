@@ -54,10 +54,10 @@
                         <div class="col-sm-5"><strong>Status:</strong></div>
                         <div class="col-sm-7">
                             <span class="badge fs-6" 
-                                  th:classappend="${recipe.status.name() == 'ACTIVE'} ? 'bg-success' : 
-                                                  (${recipe.status.name() == 'FULFILLED'} ? 'bg-primary' : 
-                                                  (${recipe.status.name() == 'EXPIRED'} ? 'bg-danger' : 'bg-secondary'))"
-                                  th:text="${recipe.status}">
+                                  th:classappend="${recipe.status != null && recipe.status.name() == 'ACTIVE'} ? 'bg-success' : 
+                                                  (${recipe.status != null && recipe.status.name() == 'FULFILLED'} ? 'bg-primary' : 
+                                                  (${recipe.status != null && recipe.status.name() == 'EXPIRED'} ? 'bg-danger' : 'bg-secondary'))"
+                                  th:text="${recipe.status != null ? recipe.status : 'UNKNOWN'}">
                                 ACTIVE
                             </span>
                         </div>
@@ -71,16 +71,18 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-5"><strong>Doctor:</strong></div>
-                        <div class="col-sm-7" th:text="${recipe.doctor.name}">Dr. Smith</div>
+                        <div class="col-sm-7" th:text="${recipe.doctor != null ? recipe.doctor.name : 'N/A'}">Dr. Smith</div>
                     </div>
                     <div class="row">
                         <div class="col-sm-5"><strong>Customer:</strong></div>
                         <div class="col-sm-7">
-                            <a th:href="@{/customers/{id}(id=${recipe.customer.id})}" 
+                            <a th:if="${recipe.customer != null}"
+                               th:href="@{/customers/{id}(id=${recipe.customer.id})}" 
                                th:text="${recipe.customer.name}"
                                class="text-decoration-none">
                                 John Doe
                             </a>
+                            <span th:if="${recipe.customer == null}" class="text-muted">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -141,13 +143,14 @@
                         <tr th:each="rm, iterStat : ${recipe.recipeMedicines}">
                             <td th:text="${iterStat.count}">1</td>
                             <td>
-                                <strong th:text="${rm.medicine.name}">Medicine Name</strong>
+                                <strong th:text="${rm.medicine != null ? rm.medicine.name : 'Unknown medicine'}">Medicine Name</strong>
                                 <br>
-                                <small class="text-muted">
-                                    Age: <span th:text="${rm.medicine.ageAppropriateness}">18+</span> | 
+                                <small class="text-muted" th:if="${rm.medicine != null}">
+                                    Age: <span th:text="${rm.medicine.ageAppropriateness}">18+</span> |
                                     <span th:if="${rm.medicine.needsRecipe}" class="badge bg-warning text-dark">Prescription Required</span>
                                     <span th:if="${!rm.medicine.needsRecipe}" class="badge bg-success">OTC</span>
                                 </small>
+                                <small class="text-muted" th:if="${rm.medicine == null}">Medicine record missing</small>
                             </td>
                             <td th:text="${rm.dosage}">2 tablets</td>
                             <td>

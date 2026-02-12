@@ -35,6 +35,7 @@ class RecipeServiceImplTest {
 
     @Test
     void createRecipeShouldSaveAndReturnRecipe() {
+        // Arrange
         Recipe input = Recipe.builder()
                 .creationDate(LocalDate.of(2026, 2, 10))
                 .doctor(doctor("Dr. A", "UIN-1"))
@@ -46,14 +47,17 @@ class RecipeServiceImplTest {
 
         when(recipeRepository.save(input)).thenReturn(input);
 
+        // Act
         Recipe result = recipeService.createRecipe(input);
 
+        // Assert
         assertThat(result).isSameAs(input);
         verify(recipeRepository).save(input);
     }
 
     @Test
     void updateRecipeShouldUpdateFieldsAndReplaceMedicines() {
+        // Arrange: existing persisted recipe and incoming update payload.
         Recipe existing = Recipe.builder()
                 .creationDate(LocalDate.of(2026, 1, 1))
                 .doctor(doctor("Dr. Old", "UIN-OLD"))
@@ -83,8 +87,10 @@ class RecipeServiceImplTest {
         when(recipeRepository.findById(42L)).thenReturn(Optional.of(existing));
         when(recipeRepository.save(existing)).thenReturn(existing);
 
+        // Act
         Recipe result = recipeService.updateRecipe(update, 42L);
 
+        // Assert: fields and medicine list are fully replaced.
         assertThat(result).isSameAs(existing);
         assertThat(existing.getCreationDate()).isEqualTo(LocalDate.of(2026, 2, 10));
         assertThat(existing.getDoctor().getName()).isEqualTo("Dr. New");
@@ -107,8 +113,10 @@ class RecipeServiceImplTest {
 
     @Test
     void updateRecipeShouldThrowWhenRecipeNotFound() {
+        // Arrange
         when(recipeRepository.findById(999L)).thenReturn(Optional.empty());
 
+        // Assert
         assertThatThrownBy(() -> recipeService.updateRecipe(Recipe.builder().build(), 999L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Recipe with id=999 not found!");

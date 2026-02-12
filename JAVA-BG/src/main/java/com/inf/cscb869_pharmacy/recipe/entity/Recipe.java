@@ -86,6 +86,13 @@ public class Recipe extends BaseEntity {
         recipeMedicine.setRecipe(this);
     }
 
+    public boolean isExpired() {
+        if (expirationDate == null) {
+            return false;
+        }
+        return LocalDate.now().isAfter(expirationDate);
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +

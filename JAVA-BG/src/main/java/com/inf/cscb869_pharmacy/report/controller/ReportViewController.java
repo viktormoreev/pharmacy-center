@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * View Controller for Medical Reports and Statistics
@@ -45,6 +46,7 @@ public class ReportViewController {
     @PreAuthorize("hasAnyRole('DOCTOR','PHARMACIST','ADMIN')")
     public String patientsByDiagnosisForm(Model model) {
         log.info("Displaying patients by diagnosis form");
+        model.addAttribute("diagnosisOptions", getDiagnosisOptions());
         return "reports/patients-by-diagnosis";
     }
 
@@ -53,6 +55,7 @@ public class ReportViewController {
     public String patientsByDiagnosisReport(@RequestParam String diagnosis, Model model) {
         log.info("Searching patients with diagnosis: {}", diagnosis);
         model.addAttribute("diagnosis", diagnosis);
+        model.addAttribute("diagnosisOptions", getDiagnosisOptions());
         model.addAttribute("patients", reportService.getPatientsByDiagnosis(diagnosis));
         model.addAttribute("count", reportService.countPatientsByDiagnosis(diagnosis));
         return "reports/patients-by-diagnosis";
@@ -202,5 +205,13 @@ public class ReportViewController {
         model.addAttribute("validInsurance", reportService.getCustomersWithValidInsurance());
         model.addAttribute("invalidInsurance", reportService.getCustomersWithoutValidInsurance());
         return "reports/insurance-status";
+    }
+
+    private List<String> getDiagnosisOptions() {
+        return reportService.getMostCommonDiagnoses().stream()
+                .map(d -> d.getDiagnosis())
+                .filter(d -> d != null && !d.isBlank())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

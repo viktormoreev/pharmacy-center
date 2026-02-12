@@ -117,11 +117,17 @@
                         <div class="row g-3 mb-4">
                             <div class="col-12">
                                 <label for="diagnosis" class="form-label">Diagnosis</label>
-                                <textarea th:field="*{diagnosis}" 
-                                          id="diagnosis"
-                                          class="form-control" 
-                                          rows="3"
-                                          placeholder="Enter diagnosis or reason for prescription..."></textarea>
+                                <input type="text"
+                                       th:field="*{diagnosis}"
+                                       id="diagnosis"
+                                       class="form-control"
+                                       list="diagnosisOptions"
+                                       placeholder="Select or type diagnosis...">
+                                <datalist id="diagnosisOptions">
+                                    <option th:each="diagnosisOption : ${diagnosisOptions}"
+                                            th:value="${diagnosisOption}">
+                                </datalist>
+                                <small class="form-text text-muted">Preset options are loaded from existing diagnoses.</small>
                             </div>
                             <div class="col-12">
                                 <label for="notes" class="form-label">Additional Notes</label>

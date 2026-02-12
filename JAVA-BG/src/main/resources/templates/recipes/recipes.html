@@ -84,9 +84,9 @@
                     <tbody>
                         <tr th:each="recipe : ${recipes}">
                             <td th:text="${recipe.id}">1</td>
-                            <td th:text="${#temporals.format(recipe.creationDate, 'MMM dd, yyyy')}">Jan 15, 2026</td>
-                            <td th:text="${recipe.doctor.name}">Dr. Smith</td>
-                            <td th:text="${recipe.customer.name}">John Doe</td>
+                            <td th:text="${recipe.creationDate != null ? #temporals.format(recipe.creationDate, 'MMM dd, yyyy') : '-'}">Jan 15, 2026</td>
+                            <td th:text="${recipe.doctor != null ? recipe.doctor.name : 'N/A'}">Dr. Smith</td>
+                            <td th:text="${recipe.customer != null ? recipe.customer.name : 'N/A'}">John Doe</td>
                             <td>
                                 <span th:if="${recipe.diagnosis != null && !recipe.diagnosis.isEmpty()}" 
                                       th:text="${#strings.abbreviate(recipe.diagnosis, 50)}">
@@ -100,15 +100,15 @@
                             <td>
                                 <span class="badge bg-info text-dark">
                                     <i class="bi bi-capsule"></i>
-                                    <span th:text="${recipe.recipeMedicines.size()}">0</span> medicine(s)
+                                    <span th:text="${recipe.recipeMedicines != null ? recipe.recipeMedicines.size() : 0}">0</span> medicine(s)
                                 </span>
                             </td>
                             <td>
                                 <span class="badge" 
-                                      th:classappend="${recipe.status.name() == 'ACTIVE'} ? 'bg-success' : 
-                                                      (${recipe.status.name() == 'FULFILLED'} ? 'bg-primary' : 
-                                                      (${recipe.status.name() == 'EXPIRED'} ? 'bg-danger' : 'bg-secondary'))"
-                                      th:text="${recipe.status}">
+                                      th:classappend="${recipe.status != null && recipe.status.name() == 'ACTIVE'} ? 'bg-success' : 
+                                                      (${recipe.status != null && recipe.status.name() == 'FULFILLED'} ? 'bg-primary' : 
+                                                      (${recipe.status != null && recipe.status.name() == 'EXPIRED'} ? 'bg-danger' : 'bg-secondary'))"
+                                      th:text="${recipe.status != null ? recipe.status : 'UNKNOWN'}">
                                     ACTIVE
                                 </span>
                             </td>

@@ -37,6 +37,7 @@ class ReportServiceImplTest {
 
     @Test
     void getPatientsByDiagnosisShouldReturnDistinctCustomers() {
+        // Arrange: repository returns repeated customer via multiple recipes.
         Customer first = Customer.builder().name("Alice").egn("1234567890").age(30).build();
         Customer second = Customer.builder().name("Bob").egn("1234567891").age(28).build();
 
@@ -47,20 +48,25 @@ class ReportServiceImplTest {
         when(recipeRepository.findByDiagnosisContainingIgnoreCase("flu"))
                 .thenReturn(List.of(r1, r2, r3));
 
+        // Act
         List<Customer> result = reportService.getPatientsByDiagnosis("flu");
 
+        // Assert: service keeps customers distinct while preserving order.
         assertThat(result).containsExactly(first, second);
     }
 
     @Test
     void getSickLeavesByMonthShouldMapNumericTypesAndMonthName() {
+        // Arrange: mixed numeric types mimic DB projection behavior.
         when(recipeRepository.countSickLeavesByMonth()).thenReturn(List.of(
                 new Object[]{2026, 2, 4L},
                 new Object[]{2025L, 13, 1}
         ));
 
+        // Act
         List<MonthlyStatisticsDTO> result = reportService.getSickLeavesByMonth();
 
+        // Assert: values are normalized and invalid month maps to UNKNOWN.
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getYear()).isEqualTo(2026);
         assertThat(result.get(0).getMonth()).isEqualTo(2);
@@ -75,11 +81,14 @@ class ReportServiceImplTest {
 
     @Test
     void getCustomersWithValidInsuranceShouldUseTodayBoundary() {
+        // Arrange
         when(customerRepository.findWithValidInsurance(org.mockito.ArgumentMatchers.any(LocalDate.class)))
                 .thenReturn(List.of());
 
+        // Act
         reportService.getCustomersWithValidInsurance();
 
+        // Assert: query boundary is "today".
         ArgumentCaptor<LocalDate> captor = ArgumentCaptor.forClass(LocalDate.class);
         verify(customerRepository).findWithValidInsurance(captor.capture());
 
@@ -88,11 +97,14 @@ class ReportServiceImplTest {
 
     @Test
     void getCustomersWithoutValidInsuranceShouldUseTodayBoundary() {
+        // Arrange
         when(customerRepository.findWithoutValidInsurance(org.mockito.ArgumentMatchers.any(LocalDate.class)))
                 .thenReturn(List.of());
 
+        // Act
         reportService.getCustomersWithoutValidInsurance();
 
+        // Assert: query boundary is "today".
         ArgumentCaptor<LocalDate> captor = ArgumentCaptor.forClass(LocalDate.class);
         verify(customerRepository).findWithoutValidInsurance(captor.capture());
 

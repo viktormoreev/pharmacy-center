@@ -30,37 +30,46 @@ class DoctorViewControllerTest {
 
     @Test
     void listDoctorsShouldPopulateModelAndReturnTemplate() {
+        // Arrange
         List<Doctor> doctors = List.of(doctor("Dr. A"), doctor("Dr. B"));
         when(doctorService.getDoctors()).thenReturn(doctors);
 
+        // Act
         ExtendedModelMap model = new ExtendedModelMap();
         String view = doctorViewController.listDoctors(model);
 
+        // Assert
         assertThat(view).isEqualTo("doctors/doctors");
         assertThat(model.getAttribute("doctors")).isEqualTo(doctors);
     }
 
     @Test
     void createDoctorShouldReturnFormWhenValidationHasErrors() {
+        // Arrange: invalid binding state.
         Doctor doctor = doctor("Dr. Invalid");
         BindingResult bindingResult = new BeanPropertyBindingResult(doctor, "doctor");
         bindingResult.rejectValue("name", "invalid", "Invalid name");
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
 
+        // Act
         String view = doctorViewController.createDoctor(doctor, bindingResult, redirect);
 
+        // Assert
         assertThat(view).isEqualTo("doctors/create-doctor");
         verifyNoInteractions(doctorService);
     }
 
     @Test
     void createDoctorShouldPersistAndRedirectOnSuccess() {
+        // Arrange
         Doctor doctor = doctor("Dr. New");
         BindingResult bindingResult = new BeanPropertyBindingResult(doctor, "doctor");
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
 
+        // Act
         String view = doctorViewController.createDoctor(doctor, bindingResult, redirect);
 
+        // Assert
         assertThat(view).isEqualTo("redirect:/doctors");
         assertThat(redirect.getFlashAttributes().get("successMessage")).isEqualTo("Doctor created successfully!");
         verify(doctorService).createDoctor(doctor);
@@ -68,12 +77,15 @@ class DoctorViewControllerTest {
 
     @Test
     void viewDoctorShouldRedirectWhenDoctorMissing() {
+        // Arrange: service throws when doctor does not exist.
         when(doctorService.getDoctor(99L)).thenThrow(new RuntimeException("missing"));
         ExtendedModelMap model = new ExtendedModelMap();
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
 
+        // Act
         String view = doctorViewController.viewDoctor(99L, model, redirect);
 
+        // Assert: user is redirected with user-friendly error.
         assertThat(view).isEqualTo("redirect:/doctors");
         assertThat(redirect.getFlashAttributes().get("errorMessage")).isEqualTo("Doctor not found!");
     }

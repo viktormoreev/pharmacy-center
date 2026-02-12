@@ -34,15 +34,18 @@ class ReportViewControllerTest {
 
     @Test
     void sickLeavesByMonthShouldPopulateStatisticsAndMaxCount() {
+        // Arrange: non-empty monthly stats.
         List<MonthlyStatisticsDTO> statistics = List.of(
                 MonthlyStatisticsDTO.builder().year(2026).month(1).monthName("JANUARY").count(2L).build(),
                 MonthlyStatisticsDTO.builder().year(2026).month(2).monthName("FEBRUARY").count(8L).build()
         );
         when(reportService.getSickLeavesByMonth()).thenReturn(statistics);
 
+        // Act
         Model model = new ExtendedModelMap();
         String view = controller.sickLeavesByMonth(model);
 
+        // Assert: model contains original data and computed maxCount.
         assertThat(view).isEqualTo("reports/sick-leaves-by-month");
         assertThat(model.getAttribute("statistics")).isEqualTo(statistics);
         assertThat(model.getAttribute("maxCount")).isEqualTo(8L);
@@ -50,11 +53,14 @@ class ReportViewControllerTest {
 
     @Test
     void sickLeavesByMonthShouldSetZeroMaxCountForEmptyStatistics() {
+        // Arrange: empty response from service.
         when(reportService.getSickLeavesByMonth()).thenReturn(List.of());
 
+        // Act
         Model model = new ExtendedModelMap();
         String view = controller.sickLeavesByMonth(model);
 
+        // Assert: template still renders with zero maxCount.
         assertThat(view).isEqualTo("reports/sick-leaves-by-month");
         assertThat(model.getAttribute("maxCount")).isEqualTo(0L);
     }

@@ -33,6 +33,7 @@ class SickLeaveServiceImplTest {
 
     @Test
     void createSickLeaveShouldApplyDefaultsAndSave() {
+        // Arrange: input without status/issueDate/leaveNumber defaults.
         SickLeave sickLeave = SickLeave.builder()
                 .customer(customer(1L))
                 .doctor(doctor())
@@ -44,8 +45,10 @@ class SickLeaveServiceImplTest {
 
         when(sickLeaveRepository.save(sickLeave)).thenReturn(sickLeave);
 
+        // Act
         SickLeave result = sickLeaveService.createSickLeave(sickLeave);
 
+        // Assert: defaults are generated and entity is persisted.
         assertThat(result).isSameAs(sickLeave);
         assertThat(sickLeave.getStatus()).isEqualTo(SickLeaveStatus.ACTIVE);
         assertThat(sickLeave.getIssueDate()).isEqualTo(LocalDate.now());
@@ -56,6 +59,7 @@ class SickLeaveServiceImplTest {
 
     @Test
     void updateSickLeaveShouldUpdateMutableFields() {
+        // Arrange
         SickLeave existing = SickLeave.builder()
                 .startDate(LocalDate.of(2026, 2, 1))
                 .durationDays(3)
@@ -75,8 +79,10 @@ class SickLeaveServiceImplTest {
         when(sickLeaveRepository.findById(10L)).thenReturn(Optional.of(existing));
         when(sickLeaveRepository.save(existing)).thenReturn(existing);
 
+        // Act
         SickLeave result = sickLeaveService.updateSickLeave(10L, update);
 
+        // Assert
         assertThat(result).isSameAs(existing);
         assertThat(existing.getStartDate()).isEqualTo(LocalDate.of(2026, 2, 10));
         assertThat(existing.getDurationDays()).isEqualTo(7);
@@ -88,6 +94,7 @@ class SickLeaveServiceImplTest {
 
     @Test
     void extendSickLeaveShouldIncreaseDaysAndAppendNote() {
+        // Arrange
         SickLeave existing = SickLeave.builder()
                 .durationDays(5)
                 .status(SickLeaveStatus.ACTIVE)
@@ -97,8 +104,10 @@ class SickLeaveServiceImplTest {
         when(sickLeaveRepository.findById(2L)).thenReturn(Optional.of(existing));
         when(sickLeaveRepository.save(existing)).thenReturn(existing);
 
+        // Act
         SickLeave result = sickLeaveService.extendSickLeave(2L, 3, "Still ill");
 
+        // Assert: duration/status/notes reflect extension.
         assertThat(result.getDurationDays()).isEqualTo(8);
         assertThat(result.getStatus()).isEqualTo(SickLeaveStatus.EXTENDED);
         assertThat(result.getNotes()).contains("Initial");
@@ -108,6 +117,7 @@ class SickLeaveServiceImplTest {
 
     @Test
     void cancelAndCompleteShouldSetExpectedStatuses() {
+        // Arrange: two independent records for cancel and complete flows.
         SickLeave cancellable = SickLeave.builder().status(SickLeaveStatus.ACTIVE).build();
         SickLeave completable = SickLeave.builder().status(SickLeaveStatus.EXTENDED).build();
 
@@ -116,9 +126,11 @@ class SickLeaveServiceImplTest {
         when(sickLeaveRepository.save(cancellable)).thenReturn(cancellable);
         when(sickLeaveRepository.save(completable)).thenReturn(completable);
 
+        // Act
         SickLeave cancelled = sickLeaveService.cancelSickLeave(3L, "Wrong document");
         SickLeave completed = sickLeaveService.completeSickLeave(4L);
 
+        // Assert
         assertThat(cancelled.getStatus()).isEqualTo(SickLeaveStatus.CANCELLED);
         assertThat(cancelled.getNotes()).contains("Reason: Wrong document");
         assertThat(completed.getStatus()).isEqualTo(SickLeaveStatus.COMPLETED);
@@ -127,8 +139,10 @@ class SickLeaveServiceImplTest {
 
     @Test
     void getSickLeaveByIdShouldThrowWhenMissing() {
+        // Arrange
         when(sickLeaveRepository.findById(999L)).thenReturn(Optional.empty());
 
+        // Assert
         assertThatThrownBy(() -> sickLeaveService.getSickLeaveById(999L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Sick leave not found with ID: 999");

@@ -20,8 +20,14 @@
                     <div class="row">
                         <div class="col-md-8">
                             <label for="diagnosis" class="form-label">Diagnosis:</label>
-                            <input type="text" class="form-control" id="diagnosis" name="diagnosis" 
-                                   th:value="${diagnosis}" placeholder="Enter diagnosis (e.g., грип, хипертония)" required>
+                            <select class="form-select" id="diagnosis" name="diagnosis" required>
+                                <option value="" disabled th:selected="${diagnosis == null or diagnosis.isEmpty()}">Select diagnosis</option>
+                                <option th:each="diagnosisOption : ${diagnosisOptions}"
+                                        th:value="${diagnosisOption}"
+                                        th:text="${diagnosisOption}"
+                                        th:selected="${diagnosisOption == diagnosis}">
+                                </option>
+                            </select>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100">🔍 Search</button>

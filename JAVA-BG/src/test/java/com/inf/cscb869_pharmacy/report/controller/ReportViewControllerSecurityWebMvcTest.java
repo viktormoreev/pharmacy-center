@@ -41,6 +41,7 @@ class ReportViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "DOCTOR")
     void patientsByPrimaryDoctorShouldBeForbiddenForDoctor() throws Exception {
+        // This report is restricted to pharmacist/admin roles.
         mockMvc.perform(get("/reports/patients-by-primary-doctor"))
                 .andExpect(status().isForbidden());
     }
@@ -48,7 +49,7 @@ class ReportViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "PHARMACIST")
     void apiReportsPathShouldPassSecurityForPharmacist() throws Exception {
-        // No handler exists for this path; 404 confirms security allowed access.
+        // No handler exists for this path; 404 means security allowed request through.
         mockMvc.perform(get("/api/reports/non-existing"))
                 .andExpect(status().isNotFound());
     }
@@ -56,6 +57,7 @@ class ReportViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "CUSTOMER")
     void reportsIndexShouldBeForbiddenForCustomer() throws Exception {
+        // Customers cannot access reports UI.
         mockMvc.perform(get("/reports"))
                 .andExpect(status().isForbidden());
     }
@@ -63,6 +65,7 @@ class ReportViewControllerSecurityWebMvcTest {
     @Test
     @WithMockUser(roles = "CUSTOMER")
     void apiReportsPathShouldBeForbiddenForCustomer() throws Exception {
+        // Customers cannot access reports API either.
         mockMvc.perform(get("/api/reports/non-existing"))
                 .andExpect(status().isForbidden());
     }

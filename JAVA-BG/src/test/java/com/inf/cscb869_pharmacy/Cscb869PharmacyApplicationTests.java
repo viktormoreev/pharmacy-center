@@ -8,6 +8,7 @@ class Cscb869PharmacyApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Smoke test: verifies Spring Boot application context starts successfully.
 	}
 
 }
