@@ -116,18 +116,35 @@
                         </h5>
                         <div class="row g-3 mb-4">
                             <div class="col-12">
-                                <label for="diagnosis" class="form-label">Diagnosis</label>
-                                <input type="text"
-                                       th:field="*{diagnosis}"
-                                       id="diagnosis"
-                                       class="form-control"
-                                       list="diagnosisOptions"
-                                       placeholder="Select or type diagnosis...">
-                                <datalist id="diagnosisOptions">
+                                <label class="form-label">Diagnoses</label>
+                                <datalist id="diagnosisOptionsList">
                                     <option th:each="diagnosisOption : ${diagnosisOptions}"
                                             th:value="${diagnosisOption}">
                                 </datalist>
-                                <small class="form-text text-muted">Preset options are loaded from existing diagnoses.</small>
+
+                                <div id="diagnosesContainer">
+                                    <div th:each="diag, iterStat : *{selectedDiagnoses}" class="diagnosis-row card mb-2 shadow-sm">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <strong>Diagnosis #<span th:text="${iterStat.count}">1</span></strong>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDiagnosis(this)">
+                                                    <i class="bi bi-trash"></i> Remove
+                                                </button>
+                                            </div>
+                                            <input type="text"
+                                                   th:field="*{selectedDiagnoses[__${iterStat.index}__]}"
+                                                   class="form-control"
+                                                   list="diagnosisOptionsList"
+                                                   placeholder="Select or type diagnosis..."
+                                                   required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="addDiagnosis()">
+                                    <i class="bi bi-plus-circle"></i> Add Another Diagnosis
+                                </button>
+                                <small class="form-text text-muted d-block mt-2">Diagnoses will be attached to the selected patient in this prescription.</small>
                             </div>
                             <div class="col-12">
                                 <label for="notes" class="form-label">Additional Notes</label>
@@ -227,9 +244,11 @@
 
 <script th:inline="javascript">
     let medicineCount = /*[[${recipeDTO.medicines.size()}]]*/ 0;
+    let diagnosisCount = /*[[${recipeDTO.selectedDiagnoses.size()}]]*/ 0;
     
     // Store medicine options as JavaScript array
     const medicineOptions = /*[[${medicines}]]*/ [];
+    const diagnosisOptions = /*[[${diagnosisOptions}]]*/ [];
     
     function addMedicine() {
         const container = document.getElementById('medicinesContainer');
@@ -293,12 +312,66 @@
         });
     }
 
+    function addDiagnosis() {
+        const container = document.getElementById('diagnosesContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'diagnosis-row card mb-2 shadow-sm';
+
+        const optionsAttribute = diagnosisOptions.length > 0
+            ? `list="diagnosisOptionsList"`
+            : '';
+
+        newRow.innerHTML = `
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>Diagnosis #${diagnosisCount + 1}</strong>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDiagnosis(this)">
+                        <i class="bi bi-trash"></i> Remove
+                    </button>
+                </div>
+                <input type="text"
+                       name="selectedDiagnoses[${diagnosisCount}]"
+                       class="form-control"
+                       ${optionsAttribute}
+                       placeholder="Select or type diagnosis..."
+                       required>
+            </div>
+        `;
+        container.appendChild(newRow);
+        diagnosisCount++;
+        updateDiagnosisNumbers();
+    }
+
+    function removeDiagnosis(button) {
+        const diagnosisRows = document.querySelectorAll('.diagnosis-row');
+        if (diagnosisRows.length > 1) {
+            button.closest('.diagnosis-row').remove();
+            updateDiagnosisNumbers();
+        } else {
+            alert('At least one diagnosis is required!');
+        }
+    }
+
+    function updateDiagnosisNumbers() {
+        const diagnosisRows = document.querySelectorAll('.diagnosis-row');
+        diagnosisRows.forEach((row, index) => {
+            const label = row.querySelector('strong');
+            if (label) {
+                label.textContent = `Diagnosis #${index + 1}`;
+            }
+        });
+    }
+
     // Set default creation date to today
     document.addEventListener('DOMContentLoaded', function() {
         const creationDateInput = document.getElementById('creationDate');
         if (!creationDateInput.value) {
             const today = new Date().toISOString().split('T')[0];
             creationDateInput.value = today;
+        }
+
+        if (diagnosisCount === 0) {
+            addDiagnosis();
         }
     });
 </script>

@@ -35,6 +35,9 @@ public class RecipeDTO {
 
     private String diagnosis;
 
+    @Builder.Default
+    private List<String> selectedDiagnoses = new ArrayList<>();
+
     private String notes;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

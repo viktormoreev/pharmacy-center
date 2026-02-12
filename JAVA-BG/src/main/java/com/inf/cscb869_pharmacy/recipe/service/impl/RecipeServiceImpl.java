@@ -50,6 +50,14 @@ public class RecipeServiceImpl implements RecipeService {
         existingRecipe.setNotes(recipe.getNotes());
         existingRecipe.setExpirationDate(recipe.getExpirationDate());
 
+        existingRecipe.getDiagnoses().clear();
+        if (recipe.getDiagnoses() != null) {
+            recipe.getDiagnoses().forEach(diagnosis -> {
+                diagnosis.setRecipe(existingRecipe);
+                existingRecipe.getDiagnoses().add(diagnosis);
+            });
+        }
+
         existingRecipe.getRecipeMedicines().clear();
         if (recipe.getRecipeMedicines() != null) {
             recipe.getRecipeMedicines().forEach(existingRecipe::addMedicine);

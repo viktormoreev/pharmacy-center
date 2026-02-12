@@ -37,6 +37,69 @@
                             <small class="form-text text-muted">Enter the doctor's full name (e.g., Dr. John Smith)</small>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="licenseNumber" class="form-label">License Number <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('licenseNumber')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="licenseNumber"
+                                   th:field="*{licenseNumber}"
+                                   placeholder="Enter license number"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('licenseNumber')}" th:errors="*{licenseNumber}">
+                                License number error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="specialty" class="form-label">Specialty <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('specialty')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="specialty"
+                                   th:field="*{specialty}"
+                                   placeholder="Enter specialty"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('specialty')}" th:errors="*{specialty}">
+                                Specialty error
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="email"
+                                       th:field="*{email}"
+                                       placeholder="doctor@hospital.bg">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                    Email error
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="phoneNumber" class="form-label">Phone</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('phoneNumber')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="phoneNumber"
+                                       th:field="*{phoneNumber}"
+                                       placeholder="+359888123456">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">
+                                    Phone error
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="isPrimaryDoctor" th:field="*{isPrimaryDoctor}">
+                            <label class="form-check-label" for="isPrimaryDoctor">
+                                Is Primary Doctor
+                            </label>
+                        </div>
+
                         <!-- Buttons -->
                         <div class="d-flex justify-content-between">
                             <a href="/doctors" class="btn btn-secondary">

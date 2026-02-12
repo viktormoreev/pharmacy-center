@@ -1,6 +1,7 @@
 package com.inf.cscb869_pharmacy.recipe.controller;
 
 import com.inf.cscb869_pharmacy.customer.service.CustomerService;
+import com.inf.cscb869_pharmacy.diagnosis.entity.Diagnosis;
 import com.inf.cscb869_pharmacy.diagnosis.service.DiagnosisService;
 import com.inf.cscb869_pharmacy.doctor.service.DoctorService;
 import com.inf.cscb869_pharmacy.medicine.entity.Medicine;
@@ -23,8 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -159,6 +163,8 @@ public class RecipeViewController {
             recipeDTO.setDoctorId(doctor.getId());
         }
 
+        recipeDTO.setDiagnosis(combineDiagnoses(recipeDTO.getSelectedDiagnoses(), recipeDTO.getDiagnosis()));
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("doctors", doctorService.getDoctors());
             model.addAttribute("customers", customerService.getActiveCustomers());
@@ -259,6 +265,8 @@ public class RecipeViewController {
             redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
             return "redirect:/recipes";
         }
+
+        recipeDTO.setDiagnosis(combineDiagnoses(recipeDTO.getSelectedDiagnoses(), recipeDTO.getDiagnosis()));
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("doctors", doctorService.getDoctors());
@@ -322,17 +330,33 @@ public class RecipeViewController {
     private Recipe convertToEntity(RecipeDTO dto) {
         var doctor = doctorService.getDoctor(dto.getDoctorId());
         var customer = customerService.getCustomerById(dto.getCustomerId());
+        String combinedDiagnosis = combineDiagnoses(dto.getSelectedDiagnoses(), dto.getDiagnosis());
         
         Recipe recipe = Recipe.builder()
                 .creationDate(dto.getCreationDate())
                 .doctor(doctor)
                 .customer(customer)
                 .status(dto.getStatus())
-                .diagnosis(dto.getDiagnosis())
+                .diagnosis(combinedDiagnosis)
                 .notes(dto.getNotes())
                 .expirationDate(dto.getExpirationDate())
                 .recipeMedicines(new ArrayList<>())
                 .build();
+
+        List<String> diagnosisNames = splitDiagnosisValues(combinedDiagnosis);
+        for (int index = 0; index < diagnosisNames.size(); index++) {
+            String diagnosisName = diagnosisNames.get(index);
+            if (diagnosisName.length() < 3) {
+                continue;
+            }
+            Diagnosis diagnosis = Diagnosis.builder()
+                    .recipe(recipe)
+                    .name(diagnosisName)
+                    .diagnosisDate(dto.getCreationDate())
+                    .isPrimary(index == 0)
+                    .build();
+            recipe.getDiagnoses().add(diagnosis);
+        }
 
         // Add medicines
         if (dto.getMedicines() != null) {
@@ -363,13 +387,28 @@ public class RecipeViewController {
      * Convert Entity to DTO
      */
     private RecipeDTO convertToDTO(Recipe recipe) {
+        List<String> selectedDiagnoses = recipe.getDiagnoses() == null
+                ? new ArrayList<>()
+                : recipe.getDiagnoses().stream()
+                .map(Diagnosis::getName)
+                .filter(name -> name != null && !name.isBlank())
+                .map(String::trim)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(LinkedHashSet::new),
+                        ArrayList::new
+                ));
+        if (selectedDiagnoses.isEmpty()) {
+            selectedDiagnoses = splitDiagnosisValues(recipe.getDiagnosis());
+        }
+
         RecipeDTO dto = RecipeDTO.builder()
                 .id(recipe.getId())
                 .creationDate(recipe.getCreationDate())
                 .doctorId(recipe.getDoctor().getId())
                 .customerId(recipe.getCustomer().getId())
                 .status(recipe.getStatus())
-                .diagnosis(recipe.getDiagnosis())
+                .diagnosis("")
+                .selectedDiagnoses(selectedDiagnoses)
                 .notes(recipe.getNotes())
                 .expirationDate(recipe.getExpirationDate())
                 .medicines(new ArrayList<>())
@@ -426,6 +465,43 @@ public class RecipeViewController {
                 .anyMatch(a -> "ROLE_DOCTOR".equals(a.getAuthority()));
     }
 
+    private String combineDiagnoses(List<String> selectedDiagnoses, String freeTextDiagnosis) {
+        Map<String, String> uniqueDiagnoses = new LinkedHashMap<>();
+        addDiagnoses(uniqueDiagnoses, selectedDiagnoses);
+        addDiagnoses(uniqueDiagnoses, splitDiagnosisValues(freeTextDiagnosis));
+        if (uniqueDiagnoses.isEmpty()) {
+            return null;
+        }
+        return String.join(", ", uniqueDiagnoses.values());
+    }
+
+    private void addDiagnoses(Map<String, String> uniqueDiagnoses, List<String> diagnoses) {
+        if (diagnoses == null) {
+            return;
+        }
+        for (String diagnosis : diagnoses) {
+            if (diagnosis == null) {
+                continue;
+            }
+            String trimmed = diagnosis.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            String key = trimmed.toLowerCase();
+            uniqueDiagnoses.putIfAbsent(key, trimmed);
+        }
+    }
+
+    private List<String> splitDiagnosisValues(String diagnosisText) {
+        if (diagnosisText == null || diagnosisText.isBlank()) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(diagnosisText.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     private List<String> getDiagnosisOptions() {
         LinkedHashSet<String> options = new LinkedHashSet<>();
 
@@ -438,7 +514,7 @@ public class RecipeViewController {
         recipeService.getRecipes().stream()
                 .map(Recipe::getDiagnosis)
                 .filter(name -> name != null && !name.isBlank())
-                .map(String::trim)
+                .flatMap(name -> splitDiagnosisValues(name).stream())
                 .forEach(options::add);
 
         return options.stream()
